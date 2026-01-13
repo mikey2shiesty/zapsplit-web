@@ -17,6 +17,7 @@ import { getSplitByCode, SplitWithDetails, SplitItem } from '@/lib/supabase';
 import ItemList from '@/components/ItemList';
 import PaymentSummary from '@/components/PaymentSummary';
 import PayButton from '@/components/PayButton';
+import StripeProvider from '@/components/StripeProvider';
 
 // Loading skeleton component
 function LoadingSkeleton() {
@@ -196,7 +197,8 @@ export default function PaymentPage() {
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [userInfoCollapsed, setUserInfoCollapsed] = useState(false);
-  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   // Fetch split data
   useEffect(() => {
@@ -304,20 +306,12 @@ export default function PaymentPage() {
     });
   };
 
-  const handlePay = async () => {
-    if (!split || total <= 0 || !userName.trim() || !userEmail.trim()) {
-      return;
-    }
+  const handlePaymentSuccess = () => {
+    setPaymentSuccess(true);
+  };
 
-    setPaymentLoading(true);
-
-    // Mock payment flow - will be replaced with Azupay integration
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    // For now, show alert with payment details
-    alert(`Payment of ${formatCurrency(total)} to ${split.creator?.full_name || 'Unknown'} would be initiated here via Azupay PayTo.`);
-
-    setPaymentLoading(false);
+  const handlePaymentError = (errorMessage: string) => {
+    setPaymentError(errorMessage);
   };
 
   // Loading state
@@ -328,6 +322,16 @@ export default function PaymentPage() {
   // Error state
   if (error || !split) {
     return <ErrorState message={error || 'Payment link not found'} />;
+  }
+
+  // Success state
+  if (paymentSuccess) {
+    return (
+      <PaymentSuccessScreen
+        recipientName={split.creator?.full_name || 'Unknown'}
+        amount={total}
+      />
+    );
   }
 
   const items = (split.items || []) as SplitItem[];
@@ -431,18 +435,84 @@ export default function PaymentPage() {
           selectedCount={selectedItems.size}
         />
 
+        {/* Payment Error */}
+        {paymentError && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-4 rounded-xl bg-[var(--error)]/10 border border-[var(--error)]/30"
+          >
+            <p className="text-sm text-[var(--error)]">{paymentError}</p>
+            <button
+              onClick={() => setPaymentError(null)}
+              className="mt-2 text-sm text-[var(--text-muted)] underline"
+            >
+              Try again
+            </button>
+          </motion.div>
+        )}
+
         {/* Pay Button */}
         <div className="safe-bottom">
-          <PayButton
-            amount={total}
-            recipientName={split.creator?.full_name || 'Unknown'}
-            payId={split.creator?.payid}
-            disabled={!isUserInfoComplete || selectedItems.size === 0}
-            loading={paymentLoading}
-            onClick={handlePay}
-          />
+          <StripeProvider>
+            <PayButton
+              amount={total}
+              recipientName={split.creator?.full_name || 'Unknown'}
+              creatorStripeAccountId={split.creator?.stripe_account_id}
+              splitId={split.id}
+              payerName={userName}
+              payerEmail={userEmail}
+              disabled={!isUserInfoComplete || selectedItems.size === 0}
+              onSuccess={handlePaymentSuccess}
+              onError={handlePaymentError}
+            />
+          </StripeProvider>
         </div>
       </main>
+    </div>
+  );
+}
+
+// Payment success component
+function PaymentSuccessScreen({ recipientName, amount }: { recipientName: string; amount: number }) {
+  return (
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="text-center space-y-6 max-w-sm"
+      >
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+          className="w-24 h-24 mx-auto rounded-full bg-[var(--success)]/10 flex items-center justify-center"
+        >
+          <CheckCircle2 size={48} className="text-[var(--success)]" />
+        </motion.div>
+
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
+            Payment Successful!
+          </h1>
+          <p className="text-[var(--text-muted)]">
+            You paid <span className="font-semibold text-[var(--text-secondary)]">{formatCurrency(amount)}</span> to{' '}
+            <span className="font-semibold text-[var(--text-secondary)]">{recipientName}</span>
+          </p>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="pt-4"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--surface)] border border-[var(--border-light)]">
+            <Zap size={16} className="text-[var(--primary)]" />
+            <span className="text-sm text-[var(--text-muted)]">Powered by ZapSplit</span>
+          </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
