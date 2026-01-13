@@ -458,7 +458,7 @@ export default function PaymentPage() {
             <PayButton
               amount={total}
               recipientName={split.creator?.full_name || 'Unknown'}
-              creatorStripeAccountId={split.creator?.stripe_account_id}
+              creatorStripeAccountId={split.creator?.stripe_connect_account_id}
               splitId={split.id}
               payerName={userName}
               payerEmail={userEmail}

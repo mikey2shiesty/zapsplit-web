@@ -48,7 +48,7 @@ export interface Profile {
   full_name: string;
   avatar_url?: string;
   payid?: string;
-  stripe_account_id?: string;
+  stripe_connect_account_id?: string;
 }
 
 export interface SplitWithDetails extends Split {
@@ -83,7 +83,7 @@ export async function getSplitByCode(code: string): Promise<SplitWithDetails | n
     .from('splits')
     .select(`
       *,
-      creator:profiles!splits_creator_id_fkey(id, full_name, avatar_url, payid, stripe_account_id)
+      creator:profiles!splits_creator_id_fkey(id, full_name, avatar_url, payid, stripe_connect_account_id)
     `)
     .eq('id', paymentLink.split_id)
     .single();
