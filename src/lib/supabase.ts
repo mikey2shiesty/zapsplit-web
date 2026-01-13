@@ -78,19 +78,30 @@ export async function getSplitByCode(code: string): Promise<SplitWithDetails | n
     return null;
   }
 
-  // Get the split with creator info
+  // Get the split
   const { data: split, error: splitError } = await supabase
     .from('splits')
-    .select(`
-      *,
-      creator:profiles!splits_creator_id_fkey(id, full_name, avatar_url, payid, stripe_connect_account_id)
-    `)
+    .select('*')
     .eq('id', paymentLink.split_id)
     .single();
 
   if (splitError || !split) {
     console.error('Split not found:', splitError);
     return null;
+  }
+
+  // Get creator profile separately (creator_id matches profile id)
+  let creator: Profile | undefined;
+  if (split.creator_id) {
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .select('id, full_name, avatar_url, payid, stripe_connect_account_id')
+      .eq('id', split.creator_id)
+      .single();
+
+    if (profileData) {
+      creator = profileData;
+    }
   }
 
   // Get existing claims for this split
@@ -101,6 +112,7 @@ export async function getSplitByCode(code: string): Promise<SplitWithDetails | n
 
   return {
     ...split,
+    creator,
     claims: claims || [],
   };
 }
