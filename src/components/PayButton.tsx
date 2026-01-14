@@ -2,13 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Loader2, CreditCard, Shield } from 'lucide-react';
+import { Loader2, Shield, Smartphone } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import {
   useStripe,
-  useElements,
   PaymentRequestButtonElement,
-  PaymentElement,
 } from '@stripe/react-stripe-js';
 import { PaymentRequest } from '@stripe/stripe-js';
 
@@ -36,18 +34,16 @@ export default function PayButton({
   onError,
 }: PayButtonProps) {
   const stripe = useStripe();
-  const elements = useElements();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [paymentRequest, setPaymentRequest] = useState<PaymentRequest | null>(null);
-  const [canMakePayment, setCanMakePayment] = useState(false);
-  const [showCardForm, setShowCardForm] = useState(false);
+  const [canMakePayment, setCanMakePayment] = useState<boolean | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
 
   const isReady = amount > 0 && !disabled && payerName && payerEmail;
   const platformFee = 0.50;
   const totalAmount = amount + platformFee;
 
-  // Create payment intent when amount changes
+  // Create payment intent when ready
   useEffect(() => {
     if (!isReady || !creatorStripeAccountId) return;
 
@@ -82,7 +78,10 @@ export default function PayButton({
 
   // Set up Apple Pay / Google Pay
   useEffect(() => {
-    if (!stripe || !isReady) return;
+    if (!stripe || !isReady) {
+      setLoading(false);
+      return;
+    }
 
     const pr = stripe.paymentRequest({
       country: 'AU',
@@ -96,15 +95,17 @@ export default function PayButton({
     });
 
     pr.canMakePayment().then((result) => {
+      setCanMakePayment(!!result);
       if (result) {
         setPaymentRequest(pr);
-        setCanMakePayment(true);
       }
+      setLoading(false);
     });
 
     pr.on('paymentmethod', async (event) => {
       if (!clientSecret) {
         event.complete('fail');
+        onError('Payment not ready. Please try again.');
         return;
       }
 
@@ -134,38 +135,17 @@ export default function PayButton({
     });
   }, [stripe, isReady, totalAmount, recipientName, clientSecret, onSuccess, onError]);
 
-  const handleCardPayment = async () => {
-    if (!stripe || !elements || !clientSecret) return;
-
-    setLoading(true);
-
-    try {
-      const { error, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: window.location.href,
+  // Update payment request amount when it changes
+  useEffect(() => {
+    if (paymentRequest && isReady) {
+      paymentRequest.update({
+        total: {
+          label: `Pay ${recipientName}`,
+          amount: Math.round(totalAmount * 100),
         },
-        redirect: 'if_required',
       });
-
-      if (error) {
-        onError(error.message || 'Payment failed');
-      } else if (paymentIntent?.status === 'succeeded') {
-        onSuccess();
-      }
-    } catch (err: any) {
-      onError(err.message || 'Payment failed');
-    } finally {
-      setLoading(false);
     }
-  };
-
-  const handleMockPayment = async () => {
-    setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    alert(`Payment of ${formatCurrency(totalAmount)} to ${recipientName} would be processed here.\n\nTo enable real payments, add Stripe keys to environment variables.`);
-    setLoading(false);
-  };
+  }, [paymentRequest, totalAmount, recipientName, isReady]);
 
   return (
     <motion.div
@@ -174,215 +154,141 @@ export default function PayButton({
       transition={{ delay: 0.2 }}
       style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
     >
-      {/* Apple Pay / Google Pay Button */}
-      {canMakePayment && paymentRequest && (
-        <div style={{ marginBottom: '16px' }}>
-          <PaymentRequestButtonElement
-            options={{
-              paymentRequest,
-              style: {
-                paymentRequestButton: {
-                  type: 'default',
-                  theme: 'dark',
-                  height: '56px',
-                },
-              },
-            }}
-          />
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            margin: '20px 0',
-          }}>
-            <div style={{ flex: 1, height: '1px', background: '#E2E8F0' }} />
-            <span style={{ fontSize: '13px', color: '#94A3B8', fontWeight: 500 }}>or pay with card</span>
-            <div style={{ flex: 1, height: '1px', background: '#E2E8F0' }} />
-          </div>
+      {/* Loading State */}
+      {loading && (
+        <div style={{
+          padding: '24px',
+          borderRadius: '24px',
+          background: 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '12px',
+        }}>
+          <Loader2 size={24} color="#64748B" style={{ animation: 'spin 1s linear infinite' }} />
+          <span style={{ color: '#64748B', fontWeight: 500 }}>Loading payment options...</span>
         </div>
       )}
 
-      {/* Card Payment Form */}
-      {showCardForm && clientSecret ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Apple Pay / Google Pay Button */}
+      {!loading && canMakePayment && paymentRequest && isReady && (
+        <>
           <div style={{
-            padding: '24px',
             borderRadius: '20px',
-            background: '#FFFFFF',
-            border: '2px solid #E2E8F0',
-            boxShadow: '0 4px 24px rgba(0, 0, 0, 0.04)',
+            overflow: 'hidden',
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
           }}>
-            <PaymentElement options={{ layout: 'tabs' }} />
+            <PaymentRequestButtonElement
+              options={{
+                paymentRequest,
+                style: {
+                  paymentRequestButton: {
+                    type: 'default',
+                    theme: 'dark',
+                    height: '56px',
+                  },
+                },
+              }}
+            />
           </div>
-          <motion.button
-            whileHover={!loading ? { scale: 1.02 } : {}}
-            whileTap={!loading ? { scale: 0.98 } : {}}
-            onClick={handleCardPayment}
-            disabled={loading || !stripe}
+
+          {/* Fee Breakdown */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             style={{
-              width: '100%',
-              padding: '20px',
-              borderRadius: '20px',
-              border: 'none',
-              background: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
-              color: 'white',
-              fontSize: '18px',
-              fontWeight: 700,
-              cursor: loading ? 'not-allowed' : 'pointer',
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+            }}
+          >
+            <div style={{
+              fontSize: '14px',
+              color: '#64748B',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '12px',
-              boxShadow: '0 8px 24px rgba(59, 130, 246, 0.35)',
-              transition: 'all 0.3s ease',
-            }}
-          >
-            {loading ? (
-              <Loader2 size={24} style={{ animation: 'spin 1s linear infinite' }} />
-            ) : (
-              <>
-                <CreditCard size={24} />
-                <span>Pay {formatCurrency(totalAmount)}</span>
-              </>
-            )}
-          </motion.button>
-        </div>
-      ) : (
-        /* Main Pay Button */
-        <motion.button
-          whileHover={isReady && !loading ? { scale: 1.02, boxShadow: '0 12px 32px rgba(59, 130, 246, 0.4)' } : {}}
-          whileTap={isReady && !loading ? { scale: 0.98 } : {}}
-          onClick={() => {
-            if (clientSecret) {
-              setShowCardForm(true);
-            } else {
-              handleMockPayment();
-            }
-          }}
-          disabled={!isReady || loading}
-          style={{
-            width: '100%',
-            position: 'relative',
-            overflow: 'hidden',
-            padding: '24px',
-            borderRadius: '24px',
-            border: 'none',
-            background: isReady && !loading
-              ? 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)'
-              : 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)',
-            color: isReady && !loading ? 'white' : '#94A3B8',
-            cursor: isReady && !loading ? 'pointer' : 'not-allowed',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            boxShadow: isReady && !loading
-              ? '0 8px 24px rgba(59, 130, 246, 0.35)'
-              : '0 2px 12px rgba(0, 0, 0, 0.04)',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            {loading ? (
-              <div style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '18px',
-                background: 'rgba(255, 255, 255, 0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <Loader2 size={24} style={{ animation: 'spin 1s linear infinite' }} />
-              </div>
-            ) : (
-              <div style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '18px',
-                background: isReady ? 'rgba(255, 255, 255, 0.2)' : '#E2E8F0',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: isReady ? '0 4px 12px rgba(0, 0, 0, 0.1)' : 'none',
-              }}>
-                <CreditCard size={26} />
-              </div>
-            )}
-            <div style={{ textAlign: 'left' }}>
-              <div style={{
-                fontSize: '14px',
+              gap: '8px',
+            }}>
+              <span>{formatCurrency(amount)}</span>
+              <span style={{ color: '#CBD5E1' }}>+</span>
+              <span style={{
+                padding: '4px 10px',
+                borderRadius: '8px',
+                background: '#F1F5F9',
+                fontSize: '13px',
                 fontWeight: 500,
-                opacity: 0.85,
-                marginBottom: '4px',
               }}>
-                {loading ? 'Processing...' : 'Pay with Card'}
-              </div>
-              <div style={{
-                fontSize: '26px',
-                fontWeight: 800,
-                letterSpacing: '-0.5px',
-              }}>
-                {formatCurrency(totalAmount)}
-              </div>
+                {formatCurrency(platformFee)} fee
+              </span>
             </div>
-          </div>
-
-          {!loading && isReady && (
-            <motion.div
-              animate={{ x: [0, 8, 0] }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
-              style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: '14px',
-                background: 'rgba(255, 255, 255, 0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <ArrowRight size={24} />
-            </motion.div>
-          )}
-        </motion.button>
+            <div style={{ fontSize: '14px', color: '#94A3B8' }}>
+              Paying <span style={{ fontWeight: 600, color: '#475569' }}>{recipientName}</span>
+            </div>
+          </motion.div>
+        </>
       )}
 
-      {/* Fee Breakdown */}
-      {isReady && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          style={{
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
-          }}
-        >
+      {/* Not Ready State - No items selected or missing info */}
+      {!loading && !isReady && (
+        <div style={{
+          padding: '24px',
+          borderRadius: '24px',
+          background: 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)',
+          textAlign: 'center',
+        }}>
           <div style={{
-            fontSize: '14px',
-            color: '#64748B',
+            width: '56px',
+            height: '56px',
+            margin: '0 auto 16px',
+            borderRadius: '18px',
+            background: '#E2E8F0',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '8px',
           }}>
-            <span>{formatCurrency(amount)}</span>
-            <span style={{ color: '#CBD5E1' }}>+</span>
-            <span style={{
-              padding: '4px 10px',
-              borderRadius: '8px',
-              background: '#F1F5F9',
-              fontSize: '13px',
-              fontWeight: 500,
-            }}>
-              {formatCurrency(platformFee)} fee
-            </span>
+            <Smartphone size={28} color="#94A3B8" />
           </div>
-          <div style={{ fontSize: '14px', color: '#94A3B8' }}>
-            Paying <span style={{ fontWeight: 600, color: '#475569' }}>{recipientName}</span>
+          <p style={{ color: '#64748B', fontWeight: 500, marginBottom: '4px' }}>
+            Apple Pay / Google Pay
+          </p>
+          <p style={{ color: '#94A3B8', fontSize: '14px' }}>
+            {!payerName || !payerEmail
+              ? 'Enter your details above to pay'
+              : 'Select items to pay'}
+          </p>
+        </div>
+      )}
+
+      {/* No Apple/Google Pay Available */}
+      {!loading && canMakePayment === false && isReady && (
+        <div style={{
+          padding: '24px',
+          borderRadius: '24px',
+          background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
+          border: '2px solid #F59E0B',
+          textAlign: 'center',
+        }}>
+          <div style={{
+            width: '56px',
+            height: '56px',
+            margin: '0 auto 16px',
+            borderRadius: '18px',
+            background: 'rgba(245, 158, 11, 0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <Smartphone size={28} color="#D97706" />
           </div>
-        </motion.div>
+          <p style={{ color: '#92400E', fontWeight: 600, marginBottom: '8px' }}>
+            Apple Pay / Google Pay Not Available
+          </p>
+          <p style={{ color: '#A16207', fontSize: '14px', lineHeight: 1.5 }}>
+            Please use Safari on iPhone for Apple Pay, or Chrome on Android for Google Pay.
+          </p>
+        </div>
       )}
 
       {/* Security Note */}
