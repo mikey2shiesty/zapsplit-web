@@ -338,80 +338,120 @@ export default function PaymentPage() {
   const isUserInfoComplete = userName.trim() && userEmail.trim() && userEmail.includes('@');
 
   return (
-    <div className="min-h-screen bg-[var(--background)]">
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--background)', paddingBottom: '2rem' }}>
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="sticky top-0 z-50 glass safe-top"
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 50,
+          backgroundColor: 'var(--background)',
+          borderBottom: '1px solid var(--border-light)',
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+        }}
       >
-        <div className="max-w-md mx-auto px-4 py-3">
-          <div className="flex items-center justify-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[var(--primary)] flex items-center justify-center">
-              <Zap size={18} className="text-white" />
+        <div style={{ maxWidth: '448px', margin: '0 auto', padding: '12px 16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              backgroundColor: '#3B82F6',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <Zap size={18} color="white" />
             </div>
-            <span className="font-bold text-lg text-[var(--text-primary)]">ZapSplit</span>
+            <span style={{ fontWeight: 700, fontSize: '18px', color: 'var(--text-primary)' }}>ZapSplit</span>
           </div>
         </div>
       </motion.header>
 
-      <main className="max-w-md mx-auto px-4 pb-8 space-y-6">
+      <main style={{ maxWidth: '448px', margin: '0 auto', padding: '0 16px' }}>
         {/* Split Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="pt-4 text-center"
+          style={{ paddingTop: '24px', textAlign: 'center' }}
         >
           {/* Creator Avatar */}
-          <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)] flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-[var(--primary)]/20">
+          <div style={{
+            width: '80px',
+            height: '80px',
+            margin: '0 auto',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontSize: '28px',
+            fontWeight: 700,
+            boxShadow: '0 10px 25px rgba(59, 130, 246, 0.3)',
+          }}>
             {split.creator?.full_name?.charAt(0) || '?'}
           </div>
 
-          <h1 className="mt-4 text-2xl font-bold text-[var(--text-primary)]">
+          <h1 style={{ marginTop: '16px', fontSize: '24px', fontWeight: 700, color: 'var(--text-primary)' }}>
             {split.title || 'Bill Split'}
           </h1>
 
-          <p className="mt-1 text-[var(--text-muted)]">
-            from <span className="font-medium text-[var(--text-secondary)]">
+          <p style={{ marginTop: '4px', color: 'var(--text-muted)' }}>
+            from <span style={{ fontWeight: 500, color: 'var(--text-secondary)' }}>
               {split.creator?.full_name || 'Someone'}
             </span>
           </p>
 
-          <div className="mt-2 flex items-center justify-center gap-1 text-sm text-[var(--text-muted)]">
+          <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontSize: '14px', color: 'var(--text-muted)' }}>
             <Clock size={14} />
             <span>{formatDate(split.created_at)}</span>
           </div>
 
-          <div className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--surface)] border border-[var(--border-light)]">
-            <Receipt size={16} className="text-[var(--primary)]" />
-            <span className="font-semibold text-[var(--text-primary)]">
+          <div style={{
+            marginTop: '12px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 16px',
+            borderRadius: '9999px',
+            backgroundColor: 'var(--surface)',
+            border: '1px solid var(--border-light)',
+          }}>
+            <Receipt size={16} color="#3B82F6" />
+            <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
               {formatCurrency(split.total_amount)}
             </span>
-            <span className="text-[var(--text-muted)]">total</span>
+            <span style={{ color: 'var(--text-muted)' }}>total</span>
           </div>
         </motion.div>
 
         {/* User Info Section */}
-        <UserInfoForm
-          name={userName}
-          email={userEmail}
-          onNameChange={setUserName}
-          onEmailChange={setUserEmail}
-          isCollapsed={userInfoCollapsed}
-          onToggle={() => setUserInfoCollapsed(!userInfoCollapsed)}
-        />
+        <div style={{ marginTop: '24px' }}>
+          <UserInfoForm
+            name={userName}
+            email={userEmail}
+            onNameChange={setUserName}
+            onEmailChange={setUserEmail}
+            isCollapsed={userInfoCollapsed}
+            onToggle={() => setUserInfoCollapsed(!userInfoCollapsed)}
+          />
+        </div>
 
         {/* Items Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
+          style={{ marginTop: '24px' }}
         >
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-semibold text-[var(--text-primary)]">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+            <h2 style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
               Select Your Items
             </h2>
-            <span className="text-sm text-[var(--text-muted)]">
+            <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
               {selectedItems.size} of {items.length} selected
             </span>
           </div>
@@ -427,25 +467,33 @@ export default function PaymentPage() {
         </motion.div>
 
         {/* Payment Summary */}
-        <PaymentSummary
-          itemsTotal={itemsTotal}
-          taxShare={taxShare}
-          tipShare={tipShare}
-          total={total}
-          selectedCount={selectedItems.size}
-        />
+        <div style={{ marginTop: '24px' }}>
+          <PaymentSummary
+            itemsTotal={itemsTotal}
+            taxShare={taxShare}
+            tipShare={tipShare}
+            total={total}
+            selectedCount={selectedItems.size}
+          />
+        </div>
 
         {/* Payment Error */}
         {paymentError && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-4 rounded-xl bg-[var(--error)]/10 border border-[var(--error)]/30"
+            style={{
+              marginTop: '16px',
+              padding: '16px',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+            }}
           >
-            <p className="text-sm text-[var(--error)]">{paymentError}</p>
+            <p style={{ fontSize: '14px', color: '#EF4444' }}>{paymentError}</p>
             <button
               onClick={() => setPaymentError(null)}
-              className="mt-2 text-sm text-[var(--text-muted)] underline"
+              style={{ marginTop: '8px', fontSize: '14px', color: 'var(--text-muted)', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}
             >
               Try again
             </button>
@@ -453,7 +501,7 @@ export default function PaymentPage() {
         )}
 
         {/* Pay Button */}
-        <div className="safe-bottom">
+        <div style={{ marginTop: '24px', paddingBottom: 'max(env(safe-area-inset-bottom, 20px), 20px)' }}>
           <StripeProvider>
             <PayButton
               amount={total}

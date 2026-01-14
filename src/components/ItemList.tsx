@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Users } from 'lucide-react';
-import { cn, formatCurrency } from '@/lib/utils';
+import { formatCurrency } from '@/lib/utils';
 
 interface Item {
   name: string;
@@ -13,10 +13,10 @@ interface Item {
 interface ItemListProps {
   items: Item[];
   selectedItems: Set<number>;
-  sharedItems: Map<number, number>; // itemIndex -> shareCount
+  sharedItems: Map<number, number>;
   onToggleItem: (index: number) => void;
   onToggleShared: (index: number) => void;
-  claimedBy?: Map<number, string[]>; // itemIndex -> array of names who claimed
+  claimedBy?: Map<number, string[]>;
 }
 
 export default function ItemList({
@@ -28,7 +28,7 @@ export default function ItemList({
   claimedBy = new Map(),
 }: ItemListProps) {
   return (
-    <div className="space-y-2">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
       {items.map((item, index) => {
         const isSelected = selectedItems.has(index);
         const isShared = sharedItems.has(index);
@@ -45,22 +45,33 @@ export default function ItemList({
           >
             <div
               onClick={() => onToggleItem(index)}
-              className={cn(
-                'relative flex items-center gap-3 p-4 rounded-2xl cursor-pointer transition-all duration-200 tap-scale',
-                'border-2',
-                isSelected
-                  ? 'bg-[var(--primary)]/5 border-[var(--primary)] dark:bg-[var(--primary)]/10'
-                  : 'bg-[var(--surface)] border-transparent hover:border-[var(--border)]'
-              )}
+              style={{
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '16px',
+                borderRadius: '16px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                border: isSelected ? '2px solid #3B82F6' : '2px solid transparent',
+                backgroundColor: isSelected ? 'rgba(59, 130, 246, 0.08)' : 'var(--surface)',
+              }}
             >
               {/* Checkbox */}
               <div
-                className={cn(
-                  'w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-200',
-                  isSelected
-                    ? 'bg-[var(--primary)] text-white'
-                    : 'bg-[var(--border-light)] dark:bg-[var(--border)]'
-                )}
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  transition: 'all 0.2s ease',
+                  backgroundColor: isSelected ? '#3B82F6' : 'var(--border-light)',
+                  color: isSelected ? 'white' : 'transparent',
+                }}
               >
                 <AnimatePresence mode="wait">
                   {isSelected && (
@@ -77,18 +88,27 @@ export default function ItemList({
               </div>
 
               {/* Item Details */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span
-                    className={cn(
-                      'font-medium truncate transition-colors',
-                      isSelected ? 'text-[var(--text-primary)]' : 'text-[var(--text-primary)]'
-                    )}
+                    style={{
+                      fontWeight: 500,
+                      color: 'var(--text-primary)',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
                   >
                     {item.name}
                   </span>
                   {item.quantity > 1 && (
-                    <span className="text-xs text-[var(--text-muted)] bg-[var(--border-light)] dark:bg-[var(--border)] px-1.5 py-0.5 rounded-md">
+                    <span style={{
+                      fontSize: '12px',
+                      color: 'var(--text-muted)',
+                      backgroundColor: 'var(--border-light)',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                    }}>
                       ×{item.quantity}
                     </span>
                   )}
@@ -96,8 +116,8 @@ export default function ItemList({
 
                 {/* Claimed by indicator */}
                 {claimers.length > 0 && (
-                  <div className="flex items-center gap-1 mt-1">
-                    <span className="text-xs text-[var(--text-muted)]">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
+                    <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                       {claimers.length === 1
                         ? `${claimers[0]} claimed this`
                         : `${claimers.length} people claimed`}
@@ -107,17 +127,18 @@ export default function ItemList({
               </div>
 
               {/* Price */}
-              <div className="flex flex-col items-end gap-1">
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
                 <span
-                  className={cn(
-                    'font-semibold tabular-nums transition-colors',
-                    isSelected ? 'text-[var(--primary)]' : 'text-[var(--text-primary)]'
-                  )}
+                  style={{
+                    fontWeight: 600,
+                    fontVariantNumeric: 'tabular-nums',
+                    color: isSelected ? '#3B82F6' : 'var(--text-primary)',
+                  }}
                 >
                   {formatCurrency(itemPrice)}
                 </span>
                 {isShared && (
-                  <span className="text-xs text-[var(--text-muted)]">
+                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                     ÷{shareCount}
                   </span>
                 )}
@@ -132,13 +153,22 @@ export default function ItemList({
                     e.stopPropagation();
                     onToggleShared(index);
                   }}
-                  className={cn(
-                    'absolute -right-2 -top-2 w-8 h-8 rounded-full flex items-center justify-center transition-all',
-                    'shadow-lg',
-                    isShared
-                      ? 'bg-[var(--success)] text-white'
-                      : 'bg-[var(--surface-elevated)] text-[var(--text-muted)] border border-[var(--border)]'
-                  )}
+                  style={{
+                    position: 'absolute',
+                    right: '-8px',
+                    top: '-8px',
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                    border: isShared ? 'none' : '1px solid var(--border)',
+                    backgroundColor: isShared ? '#10B981' : 'var(--surface-elevated)',
+                    color: isShared ? 'white' : 'var(--text-muted)',
+                    cursor: 'pointer',
+                  }}
                 >
                   <Users size={14} />
                 </motion.button>
