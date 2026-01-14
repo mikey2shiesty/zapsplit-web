@@ -17,9 +17,12 @@ export interface Split {
 }
 
 export interface SplitItem {
+  id: string;
   name: string;
   price: number;
   quantity: number;
+  unit_price: number;
+  total_price: number;
 }
 
 export interface PaymentLink {
@@ -104,6 +107,22 @@ export async function getSplitByCode(code: string): Promise<SplitWithDetails | n
     }
   }
 
+  // Get items from split_items table
+  const { data: itemsData } = await supabase
+    .from('split_items')
+    .select('id, name, quantity, unit_price, total_price')
+    .eq('split_id', split.id);
+
+  // Transform items to expected format
+  const items: SplitItem[] = (itemsData || []).map(item => ({
+    id: item.id,
+    name: item.name,
+    price: parseFloat(item.total_price) || parseFloat(item.unit_price) || 0,
+    quantity: parseFloat(item.quantity) || 1,
+    unit_price: parseFloat(item.unit_price) || 0,
+    total_price: parseFloat(item.total_price) || 0,
+  }));
+
   // Get existing claims for this split
   const { data: claims } = await supabase
     .from('item_claims')
@@ -112,6 +131,7 @@ export async function getSplitByCode(code: string): Promise<SplitWithDetails | n
 
   return {
     ...split,
+    items,
     creator,
     claims: claims || [],
   };
