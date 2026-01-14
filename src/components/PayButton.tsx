@@ -151,8 +151,18 @@ export default function PayButton({
     setLoading(true);
 
     try {
+      // First submit the payment element to validate
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        onError(submitError.message || 'Validation failed');
+        setLoading(false);
+        return;
+      }
+
+      // Then confirm the payment with the clientSecret
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
+        clientSecret,
         confirmParams: {
           return_url: window.location.href,
         },

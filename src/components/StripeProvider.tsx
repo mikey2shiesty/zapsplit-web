@@ -34,17 +34,45 @@ export default function StripeProvider({ children }: StripeProviderProps) {
       stripe={getStripe()}
       options={{
         mode: 'payment',
-        amount: 1000, // Default amount, will be updated
+        amount: 1000,
         currency: 'aud',
         appearance: {
-          theme: 'night',
+          theme: 'stripe',
           variables: {
             colorPrimary: '#3B82F6',
-            colorBackground: '#1C1C1E',
-            colorText: '#FFFFFF',
+            colorBackground: '#FFFFFF',
+            colorText: '#0F172A',
             colorDanger: '#EF4444',
             fontFamily: 'system-ui, -apple-system, sans-serif',
             borderRadius: '12px',
+            spacingUnit: '4px',
+          },
+          rules: {
+            '.Input': {
+              backgroundColor: '#F8FAFC',
+              border: '2px solid #E2E8F0',
+              boxShadow: 'none',
+            },
+            '.Input:focus': {
+              border: '2px solid #3B82F6',
+              boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
+            },
+            '.Tab': {
+              backgroundColor: '#F1F5F9',
+              border: '2px solid transparent',
+            },
+            '.Tab--selected': {
+              backgroundColor: '#3B82F6',
+              color: '#FFFFFF',
+              border: '2px solid #3B82F6',
+            },
+            '.Label': {
+              color: '#475569',
+              fontWeight: '600',
+              fontSize: '13px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+            },
           },
         },
       }}
