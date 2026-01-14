@@ -7,10 +7,8 @@ import { formatCurrency } from '@/lib/utils';
 import {
   useStripe,
   useElements,
-  PaymentRequestButtonElement,
   PaymentElement,
 } from '@stripe/react-stripe-js';
-import { PaymentRequest } from '@stripe/stripe-js';
 
 interface PayButtonProps {
   amount: number;
@@ -38,8 +36,6 @@ export default function PayButton({
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
-  const [paymentRequest, setPaymentRequest] = useState<PaymentRequest | null>(null);
-  const [canMakePayment, setCanMakePayment] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
 
   const isReady = amount > 0 && !disabled && payerName && payerEmail;
@@ -79,71 +75,6 @@ export default function PayButton({
     createPaymentIntent();
   }, [amount, creatorStripeAccountId, splitId, payerEmail, payerName, isReady, totalAmount]);
 
-  // Set up Apple Pay / Google Pay
-  useEffect(() => {
-    if (!stripe || !isReady) return;
-
-    const pr = stripe.paymentRequest({
-      country: 'AU',
-      currency: 'aud',
-      total: {
-        label: `Pay ${recipientName}`,
-        amount: Math.round(totalAmount * 100),
-      },
-      requestPayerName: true,
-      requestPayerEmail: true,
-    });
-
-    pr.canMakePayment().then((result) => {
-      if (result) {
-        setPaymentRequest(pr);
-        setCanMakePayment(true);
-      }
-    });
-
-    pr.on('paymentmethod', async (event) => {
-      if (!clientSecret) {
-        event.complete('fail');
-        return;
-      }
-
-      const { error, paymentIntent } = await stripe.confirmCardPayment(
-        clientSecret,
-        { payment_method: event.paymentMethod.id },
-        { handleActions: false }
-      );
-
-      if (error) {
-        event.complete('fail');
-        onError(error.message || 'Payment failed');
-        return;
-      }
-
-      event.complete('success');
-
-      if (paymentIntent.status === 'requires_action') {
-        const { error: confirmError } = await stripe.confirmCardPayment(clientSecret);
-        if (confirmError) {
-          onError(confirmError.message || 'Payment confirmation failed');
-          return;
-        }
-      }
-
-      onSuccess();
-    });
-  }, [stripe, isReady, totalAmount, recipientName, clientSecret, onSuccess, onError]);
-
-  // Update payment request amount when it changes
-  useEffect(() => {
-    if (paymentRequest && isReady) {
-      paymentRequest.update({
-        total: {
-          label: `Pay ${recipientName}`,
-          amount: Math.round(totalAmount * 100),
-        },
-      });
-    }
-  }, [paymentRequest, totalAmount, recipientName, isReady]);
 
   const handleSubmit = async () => {
     if (!stripe || !elements || !clientSecret) return;
@@ -209,28 +140,7 @@ export default function PayButton({
       transition={{ delay: 0.2 }}
       style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
     >
-      {/* Apple Pay / Google Pay Button */}
-      {canMakePayment && paymentRequest && (
-        <div style={{
-          borderRadius: '16px',
-          overflow: 'hidden',
-        }}>
-          <PaymentRequestButtonElement
-            options={{
-              paymentRequest,
-              style: {
-                paymentRequestButton: {
-                  type: 'default',
-                  theme: 'dark',
-                  height: '54px',
-                },
-              },
-            }}
-          />
-        </div>
-      )}
-
-      {/* Payment Form (Link + Card) */}
+      {/* Payment Form with Apple Pay / Google Pay / Link / Card */}
       {clientSecret && (
         <>
           <div style={{
@@ -242,11 +152,12 @@ export default function PayButton({
           }}>
             <PaymentElement
               options={{
-                layout: 'tabs',
+                layout: 'auto',
                 wallets: {
-                  applePay: 'never',
-                  googlePay: 'never',
-                }
+                  applePay: 'auto',
+                  googlePay: 'auto',
+                },
+                paymentMethodOrder: ['apple_pay', 'google_pay', 'link', 'card'],
               }}
             />
           </div>
