@@ -12,7 +12,7 @@ import {
   Clock,
   CheckCircle2
 } from 'lucide-react';
-import { cn, formatCurrency, formatDate } from '@/lib/utils';
+import { formatCurrency, formatDate } from '@/lib/utils';
 import { getSplitByCode, SplitWithDetails, SplitItem } from '@/lib/supabase';
 import ItemList from '@/components/ItemList';
 import PaymentSummary from '@/components/PaymentSummary';
@@ -91,36 +91,50 @@ function UserInfoForm({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={cn(
-        'rounded-2xl border transition-all duration-300 overflow-hidden',
-        isComplete
-          ? 'bg-[var(--success)]/5 border-[var(--success)]/30'
-          : 'bg-[var(--surface)] border-[var(--border-light)]'
-      )}
+      style={{
+        borderRadius: '20px',
+        border: isComplete ? '2px solid rgba(16, 185, 129, 0.3)' : '2px solid var(--border-light)',
+        backgroundColor: isComplete ? 'rgba(16, 185, 129, 0.05)' : 'var(--surface)',
+        overflow: 'hidden',
+        transition: 'all 0.3s ease',
+      }}
     >
       <button
         onClick={onToggle}
-        className="w-full p-4 flex items-center justify-between"
+        style={{
+          width: '100%',
+          padding: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+        }}
       >
-        <div className="flex items-center gap-3">
-          <div className={cn(
-            'w-10 h-10 rounded-xl flex items-center justify-center',
-            isComplete
-              ? 'bg-[var(--success)]/10 text-[var(--success)]'
-              : 'bg-[var(--border-light)] text-[var(--text-muted)]'
-          )}>
-            {isComplete ? <CheckCircle2 size={20} /> : <User size={20} />}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{
+            width: '48px',
+            height: '48px',
+            borderRadius: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: isComplete ? 'rgba(16, 185, 129, 0.1)' : 'var(--border-light)',
+            color: isComplete ? '#10B981' : 'var(--text-muted)',
+          }}>
+            {isComplete ? <CheckCircle2 size={24} /> : <User size={24} />}
           </div>
-          <div className="text-left">
+          <div style={{ textAlign: 'left' }}>
             {isComplete ? (
               <>
-                <div className="font-medium text-[var(--text-primary)]">{name}</div>
-                <div className="text-sm text-[var(--text-muted)]">{email}</div>
+                <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '16px' }}>{name}</div>
+                <div style={{ fontSize: '14px', color: 'var(--text-muted)', marginTop: '2px' }}>{email}</div>
               </>
             ) : (
               <>
-                <div className="font-medium text-[var(--text-primary)]">Your Details</div>
-                <div className="text-sm text-[var(--text-muted)]">Required for payment</div>
+                <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '16px' }}>Your Details</div>
+                <div style={{ fontSize: '14px', color: 'var(--text-muted)', marginTop: '2px' }}>Required for payment</div>
               </>
             )}
           </div>
@@ -128,8 +142,9 @@ function UserInfoForm({
         <motion.div
           animate={{ rotate: isCollapsed ? 0 : 180 }}
           transition={{ duration: 0.2 }}
+          style={{ color: 'var(--text-muted)' }}
         >
-          <ChevronDown size={20} className="text-[var(--text-muted)]" />
+          <ChevronDown size={20} />
         </motion.div>
       </button>
 
@@ -141,9 +156,20 @@ function UserInfoForm({
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="px-4 pb-4 space-y-3">
+            <div style={{
+              padding: '0 20px 24px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
+            }}>
               <div>
-                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1.5">
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: 'var(--text-secondary)',
+                  marginBottom: '10px',
+                }}>
                   Your Name
                 </label>
                 <input
@@ -151,16 +177,28 @@ function UserInfoForm({
                   value={name}
                   onChange={(e) => onNameChange(e.target.value)}
                   placeholder="Enter your name"
-                  className={cn(
-                    'w-full px-4 py-3 rounded-xl border bg-[var(--background)] transition-all',
-                    'text-[var(--text-primary)] placeholder:text-[var(--text-muted)]',
-                    'focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent',
-                    'border-[var(--border)]'
-                  )}
+                  style={{
+                    width: '100%',
+                    padding: '16px 18px',
+                    borderRadius: '14px',
+                    border: '2px solid var(--border)',
+                    backgroundColor: 'var(--background)',
+                    color: 'var(--text-primary)',
+                    fontSize: '16px',
+                    outline: 'none',
+                    transition: 'all 0.2s ease',
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1.5">
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  color: 'var(--text-secondary)',
+                  marginBottom: '10px',
+                }}>
                   Email Address
                 </label>
                 <input
@@ -168,12 +206,18 @@ function UserInfoForm({
                   value={email}
                   onChange={(e) => onEmailChange(e.target.value)}
                   placeholder="your@email.com"
-                  className={cn(
-                    'w-full px-4 py-3 rounded-xl border bg-[var(--background)] transition-all',
-                    'text-[var(--text-primary)] placeholder:text-[var(--text-muted)]',
-                    'focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent',
-                    'border-[var(--border)]'
-                  )}
+                  style={{
+                    width: '100%',
+                    padding: '16px 18px',
+                    borderRadius: '14px',
+                    border: '2px solid var(--border)',
+                    backgroundColor: 'var(--background)',
+                    color: 'var(--text-primary)',
+                    fontSize: '16px',
+                    outline: 'none',
+                    transition: 'all 0.2s ease',
+                    boxSizing: 'border-box',
+                  }}
                 />
               </div>
             </div>
@@ -429,7 +473,7 @@ export default function PaymentPage() {
         </motion.div>
 
         {/* User Info Section */}
-        <div style={{ marginTop: '24px' }}>
+        <div style={{ marginTop: '32px' }}>
           <UserInfoForm
             name={userName}
             email={userEmail}
@@ -445,14 +489,14 @@ export default function PaymentPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          style={{ marginTop: '24px' }}
+          style={{ marginTop: '32px' }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-            <h2 style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <h2 style={{ fontWeight: 700, fontSize: '18px', color: 'var(--text-primary)' }}>
               Select Your Items
             </h2>
-            <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
-              {selectedItems.size} of {items.length} selected
+            <span style={{ fontSize: '14px', color: 'var(--text-muted)', backgroundColor: 'var(--surface)', padding: '6px 12px', borderRadius: '20px' }}>
+              {selectedItems.size} of {items.length}
             </span>
           </div>
 
@@ -467,7 +511,7 @@ export default function PaymentPage() {
         </motion.div>
 
         {/* Payment Summary */}
-        <div style={{ marginTop: '24px' }}>
+        <div style={{ marginTop: '32px' }}>
           <PaymentSummary
             itemsTotal={itemsTotal}
             taxShare={taxShare}
@@ -501,7 +545,7 @@ export default function PaymentPage() {
         )}
 
         {/* Pay Button */}
-        <div style={{ marginTop: '24px', paddingBottom: 'max(env(safe-area-inset-bottom, 20px), 20px)' }}>
+        <div style={{ marginTop: '32px', paddingBottom: 'max(env(safe-area-inset-bottom, 20px), 20px)' }}>
           <StripeProvider>
             <PayButton
               amount={total}

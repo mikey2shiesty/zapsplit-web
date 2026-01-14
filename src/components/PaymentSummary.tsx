@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { Receipt, Percent, Calculator } from 'lucide-react';
-import { cn, formatCurrency } from '@/lib/utils';
+import { formatCurrency } from '@/lib/utils';
 
 interface PaymentSummaryProps {
   itemsTotal: number;
@@ -25,28 +25,54 @@ export default function PaymentSummary({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={cn(
-        'rounded-3xl p-5 transition-all duration-300',
-        'bg-gradient-to-br from-[var(--surface)] to-[var(--surface-elevated)]',
-        'border border-[var(--border-light)]',
-        'shadow-sm'
-      )}
+      style={{
+        borderRadius: '24px',
+        padding: '24px',
+        background: 'linear-gradient(135deg, var(--surface) 0%, var(--surface-elevated) 100%)',
+        border: '2px solid var(--border-light)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+      }}
     >
       {/* Header */}
-      <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 rounded-xl bg-[var(--primary)]/10 flex items-center justify-center">
-          <Calculator size={16} className="text-[var(--primary)]" />
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        marginBottom: '24px',
+        paddingBottom: '16px',
+        borderBottom: '1px solid var(--border-light)',
+      }}>
+        <div style={{
+          width: '44px',
+          height: '44px',
+          borderRadius: '14px',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <Calculator size={20} color="#3B82F6" />
         </div>
-        <span className="font-semibold text-[var(--text-primary)]">Your Summary</span>
+        <span style={{
+          fontWeight: 700,
+          fontSize: '18px',
+          color: 'var(--text-primary)',
+        }}>
+          Your Summary
+        </span>
       </div>
 
       {/* Line Items */}
-      <div className="space-y-3">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {/* Items Total */}
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Receipt size={14} className="text-[var(--text-muted)]" />
-            <span className="text-[var(--text-secondary)]">
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Receipt size={16} style={{ color: 'var(--text-muted)' }} />
+            <span style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>
               Your items ({selectedCount})
             </span>
           </div>
@@ -56,7 +82,12 @@ export default function PaymentSummary({
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="font-medium tabular-nums text-[var(--text-primary)]"
+              style={{
+                fontWeight: 600,
+                fontVariantNumeric: 'tabular-nums',
+                color: 'var(--text-primary)',
+                fontSize: '15px',
+              }}
             >
               {formatCurrency(itemsTotal)}
             </motion.span>
@@ -68,13 +99,22 @@ export default function PaymentSummary({
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
-            className="flex justify-between items-center"
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
           >
-            <div className="flex items-center gap-2">
-              <Percent size={14} className="text-[var(--text-muted)]" />
-              <span className="text-[var(--text-secondary)]">Tax share</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Percent size={16} style={{ color: 'var(--text-muted)' }} />
+              <span style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>Tax share</span>
             </div>
-            <span className="font-medium tabular-nums text-[var(--text-primary)]">
+            <span style={{
+              fontWeight: 600,
+              fontVariantNumeric: 'tabular-nums',
+              color: 'var(--text-primary)',
+              fontSize: '15px',
+            }}>
               {formatCurrency(taxShare)}
             </span>
           </motion.div>
@@ -85,13 +125,22 @@ export default function PaymentSummary({
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
-            className="flex justify-between items-center"
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
           >
-            <div className="flex items-center gap-2">
-              <span className="text-[var(--text-muted)] text-sm">💝</span>
-              <span className="text-[var(--text-secondary)]">Tip share</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '14px' }}>💝</span>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>Tip share</span>
             </div>
-            <span className="font-medium tabular-nums text-[var(--text-primary)]">
+            <span style={{
+              fontWeight: 600,
+              fontVariantNumeric: 'tabular-nums',
+              color: 'var(--text-primary)',
+              fontSize: '15px',
+            }}>
               {formatCurrency(tipShare)}
             </span>
           </motion.div>
@@ -99,11 +148,24 @@ export default function PaymentSummary({
       </div>
 
       {/* Divider */}
-      <div className="my-4 border-t border-dashed border-[var(--border)]" />
+      <div style={{
+        margin: '24px 0',
+        borderTop: '2px dashed var(--border)',
+      }} />
 
       {/* Total */}
-      <div className="flex justify-between items-center">
-        <span className="text-lg font-semibold text-[var(--text-primary)]">Your Total</span>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}>
+        <span style={{
+          fontSize: '18px',
+          fontWeight: 700,
+          color: 'var(--text-primary)',
+        }}>
+          Your Total
+        </span>
         <AnimatePresence mode="wait">
           <motion.div
             key={total}
@@ -111,10 +173,12 @@ export default function PaymentSummary({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-            className={cn(
-              'text-2xl font-bold tabular-nums',
-              hasSelection ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'
-            )}
+            style={{
+              fontSize: '28px',
+              fontWeight: 800,
+              fontVariantNumeric: 'tabular-nums',
+              color: hasSelection ? '#3B82F6' : 'var(--text-muted)',
+            }}
           >
             {formatCurrency(total)}
           </motion.div>
@@ -128,9 +192,17 @@ export default function PaymentSummary({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mt-3 text-sm text-[var(--text-muted)] text-center"
+            style={{
+              marginTop: '20px',
+              padding: '16px',
+              borderRadius: '12px',
+              backgroundColor: 'var(--background)',
+              fontSize: '14px',
+              color: 'var(--text-muted)',
+              textAlign: 'center',
+            }}
           >
-            Tap items above to select what you had
+            👆 Tap items above to select what you had
           </motion.p>
         )}
       </AnimatePresence>
