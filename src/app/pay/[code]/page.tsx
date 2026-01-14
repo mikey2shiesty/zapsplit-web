@@ -19,57 +19,95 @@ import PaymentSummary from '@/components/PaymentSummary';
 import PayButton from '@/components/PayButton';
 import StripeProvider from '@/components/StripeProvider';
 
-// Loading skeleton component
+// Premium Loading skeleton
 function LoadingSkeleton() {
   return (
-    <div className="min-h-screen bg-[var(--background)] p-4">
-      <div className="max-w-md mx-auto pt-8 space-y-6">
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(180deg, #F8FAFC 0%, #EEF2FF 100%)',
+      padding: '16px',
+    }}>
+      <div style={{ maxWidth: '420px', margin: '0 auto', paddingTop: '32px' }}>
         {/* Header skeleton */}
-        <div className="text-center space-y-3">
-          <div className="w-16 h-16 mx-auto rounded-full shimmer" />
-          <div className="h-8 w-48 mx-auto rounded-lg shimmer" />
-          <div className="h-4 w-32 mx-auto rounded-lg shimmer" />
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '88px',
+            height: '88px',
+            margin: '0 auto',
+            borderRadius: '50%',
+            background: 'linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%)',
+            backgroundSize: '200% 100%',
+            animation: 'shimmer 1.5s infinite',
+          }} />
+          <div style={{
+            width: '200px',
+            height: '28px',
+            margin: '20px auto 0',
+            borderRadius: '8px',
+            background: 'linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%)',
+            backgroundSize: '200% 100%',
+            animation: 'shimmer 1.5s infinite',
+          }} />
         </div>
-
-        {/* Items skeleton */}
-        <div className="space-y-3">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-16 rounded-2xl shimmer" />
-          ))}
-        </div>
-
-        {/* Summary skeleton */}
-        <div className="h-40 rounded-3xl shimmer" />
-
-        {/* Button skeleton */}
-        <div className="h-20 rounded-2xl shimmer" />
+        <style>{`
+          @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+          }
+        `}</style>
       </div>
     </div>
   );
 }
 
-// Error state component
+// Premium Error state
 function ErrorState({ message }: { message: string }) {
   return (
-    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center p-4">
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(180deg, #F8FAFC 0%, #FEF2F2 100%)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '24px',
+    }}>
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="text-center space-y-4 max-w-sm"
+        style={{ textAlign: 'center', maxWidth: '320px' }}
       >
-        <div className="w-20 h-20 mx-auto rounded-full bg-[var(--error)]/10 flex items-center justify-center">
-          <AlertCircle size={40} className="text-[var(--error)]" />
+        <div style={{
+          width: '80px',
+          height: '80px',
+          margin: '0 auto',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 8px 32px rgba(239, 68, 68, 0.2)',
+        }}>
+          <AlertCircle size={36} color="#DC2626" />
         </div>
-        <h1 className="text-xl font-bold text-[var(--text-primary)]">
+        <h1 style={{
+          marginTop: '24px',
+          fontSize: '22px',
+          fontWeight: 700,
+          color: '#1E293B',
+        }}>
           Link Not Found
         </h1>
-        <p className="text-[var(--text-muted)]">{message}</p>
+        <p style={{
+          marginTop: '8px',
+          color: '#64748B',
+          lineHeight: 1.5,
+        }}>{message}</p>
       </motion.div>
     </div>
   );
 }
 
-// User info input component
+// Premium User info form
 function UserInfoForm({
   name,
   email,
@@ -92,59 +130,79 @@ function UserInfoForm({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       style={{
-        borderRadius: '20px',
-        border: isComplete ? '2px solid rgba(16, 185, 129, 0.3)' : '2px solid var(--border-light)',
-        backgroundColor: isComplete ? 'rgba(16, 185, 129, 0.05)' : 'var(--surface)',
+        background: isComplete
+          ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.04) 100%)'
+          : '#FFFFFF',
+        borderRadius: '24px',
+        border: isComplete ? '1.5px solid rgba(16, 185, 129, 0.3)' : '1.5px solid #E2E8F0',
+        boxShadow: isComplete
+          ? '0 4px 24px rgba(16, 185, 129, 0.12)'
+          : '0 4px 24px rgba(0, 0, 0, 0.04)',
         overflow: 'hidden',
-        transition: 'all 0.3s ease',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >
       <button
         onClick={onToggle}
         style={{
           width: '100%',
-          padding: '20px',
+          padding: '20px 24px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          background: 'none',
+          background: 'transparent',
           border: 'none',
           cursor: 'pointer',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: '14px',
+            width: '52px',
+            height: '52px',
+            borderRadius: '16px',
+            background: isComplete
+              ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
+              : 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: isComplete ? 'rgba(16, 185, 129, 0.1)' : 'var(--border-light)',
-            color: isComplete ? '#10B981' : 'var(--text-muted)',
+            boxShadow: isComplete
+              ? '0 4px 12px rgba(16, 185, 129, 0.3)'
+              : '0 2px 8px rgba(0, 0, 0, 0.04)',
           }}>
-            {isComplete ? <CheckCircle2 size={24} /> : <User size={24} />}
+            {isComplete
+              ? <CheckCircle2 size={24} color="white" />
+              : <User size={24} color="#64748B" />
+            }
           </div>
           <div style={{ textAlign: 'left' }}>
             {isComplete ? (
               <>
-                <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '16px' }}>{name}</div>
-                <div style={{ fontSize: '14px', color: 'var(--text-muted)', marginTop: '2px' }}>{email}</div>
+                <div style={{ fontWeight: 600, fontSize: '16px', color: '#0F172A' }}>{name}</div>
+                <div style={{ fontSize: '14px', color: '#64748B', marginTop: '2px' }}>{email}</div>
               </>
             ) : (
               <>
-                <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '16px' }}>Your Details</div>
-                <div style={{ fontSize: '14px', color: 'var(--text-muted)', marginTop: '2px' }}>Required for payment</div>
+                <div style={{ fontWeight: 600, fontSize: '16px', color: '#0F172A' }}>Your Details</div>
+                <div style={{ fontSize: '14px', color: '#94A3B8', marginTop: '2px' }}>Required for payment</div>
               </>
             )}
           </div>
         </div>
         <motion.div
           animate={{ rotate: isCollapsed ? 0 : 180 }}
-          transition={{ duration: 0.2 }}
-          style={{ color: 'var(--text-muted)' }}
+          transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '12px',
+            background: '#F8FAFC',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
         >
-          <ChevronDown size={20} />
+          <ChevronDown size={20} color="#64748B" />
         </motion.div>
       </button>
 
@@ -154,21 +212,25 @@ function UserInfoForm({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
           >
             <div style={{
-              padding: '0 20px 24px 20px',
+              padding: '0 24px 28px 24px',
               display: 'flex',
               flexDirection: 'column',
               gap: '20px',
             }}>
+              <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent 0%, #E2E8F0 50%, transparent 100%)' }} />
+
               <div>
                 <label style={{
                   display: 'block',
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  color: 'var(--text-secondary)',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  color: '#475569',
                   marginBottom: '10px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
                 }}>
                   Your Name
                 </label>
@@ -179,25 +241,39 @@ function UserInfoForm({
                   placeholder="Enter your name"
                   style={{
                     width: '100%',
-                    padding: '16px 18px',
-                    borderRadius: '14px',
-                    border: '2px solid var(--border)',
-                    backgroundColor: 'var(--background)',
-                    color: 'var(--text-primary)',
+                    padding: '16px 20px',
+                    borderRadius: '16px',
+                    border: '2px solid #E2E8F0',
+                    background: '#F8FAFC',
+                    color: '#0F172A',
                     fontSize: '16px',
+                    fontWeight: 500,
                     outline: 'none',
                     transition: 'all 0.2s ease',
                     boxSizing: 'border-box',
                   }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#3B82F6';
+                    e.target.style.background = '#FFFFFF';
+                    e.target.style.boxShadow = '0 0 0 4px rgba(59, 130, 246, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#E2E8F0';
+                    e.target.style.background = '#F8FAFC';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
+
               <div>
                 <label style={{
                   display: 'block',
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  color: 'var(--text-secondary)',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  color: '#475569',
                   marginBottom: '10px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
                 }}>
                   Email Address
                 </label>
@@ -208,15 +284,26 @@ function UserInfoForm({
                   placeholder="your@email.com"
                   style={{
                     width: '100%',
-                    padding: '16px 18px',
-                    borderRadius: '14px',
-                    border: '2px solid var(--border)',
-                    backgroundColor: 'var(--background)',
-                    color: 'var(--text-primary)',
+                    padding: '16px 20px',
+                    borderRadius: '16px',
+                    border: '2px solid #E2E8F0',
+                    background: '#F8FAFC',
+                    color: '#0F172A',
                     fontSize: '16px',
+                    fontWeight: 500,
                     outline: 'none',
                     transition: 'all 0.2s ease',
                     boxSizing: 'border-box',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#3B82F6';
+                    e.target.style.background = '#FFFFFF';
+                    e.target.style.boxShadow = '0 0 0 4px rgba(59, 130, 246, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#E2E8F0';
+                    e.target.style.background = '#F8FAFC';
+                    e.target.style.boxShadow = 'none';
                   }}
                 />
               </div>
@@ -281,13 +368,11 @@ export default function PaymentPage() {
       return sum + (item.price / shareCount);
     }, 0);
 
-    // Calculate proportional tax and tip
     const billSubtotal = items.reduce((sum, item) => sum + item.price, 0);
     const proportion = billSubtotal > 0 ? selectedItemsTotal / billSubtotal : 0;
 
-    // Assuming tax and tip are stored in the split (you may need to adjust based on actual data)
-    const totalTax = (split.total_amount - billSubtotal) * 0.5 || 0; // Rough estimate
-    const totalTip = (split.total_amount - billSubtotal) * 0.5 || 0; // Rough estimate
+    const totalTax = (split.total_amount - billSubtotal) * 0.5 || 0;
+    const totalTip = (split.total_amount - billSubtotal) * 0.5 || 0;
 
     const calcTaxShare = totalTax * proportion;
     const calcTipShare = totalTip * proportion;
@@ -301,7 +386,7 @@ export default function PaymentPage() {
     };
   }, [split, selectedItems, sharedItems]);
 
-  // Build claimed by map from existing claims
+  // Build claimed by map
   const claimedBy = useMemo(() => {
     const map = new Map<number, string[]>();
     if (split?.claims) {
@@ -320,7 +405,6 @@ export default function PaymentPage() {
       const next = new Set(prev);
       if (next.has(index)) {
         next.delete(index);
-        // Also remove from shared if deselected
         setSharedItems(prevShared => {
           const nextShared = new Map(prevShared);
           nextShared.delete(index);
@@ -339,36 +423,22 @@ export default function PaymentPage() {
       if (next.has(index)) {
         const current = next.get(index)!;
         if (current >= 4) {
-          next.delete(index); // Reset after 4
+          next.delete(index);
         } else {
           next.set(index, current + 1);
         }
       } else {
-        next.set(index, 2); // Start at splitting by 2
+        next.set(index, 2);
       }
       return next;
     });
   };
 
-  const handlePaymentSuccess = () => {
-    setPaymentSuccess(true);
-  };
+  const handlePaymentSuccess = () => setPaymentSuccess(true);
+  const handlePaymentError = (errorMessage: string) => setPaymentError(errorMessage);
 
-  const handlePaymentError = (errorMessage: string) => {
-    setPaymentError(errorMessage);
-  };
-
-  // Loading state
-  if (loading) {
-    return <LoadingSkeleton />;
-  }
-
-  // Error state
-  if (error || !split) {
-    return <ErrorState message={error || 'Payment link not found'} />;
-  }
-
-  // Success state
+  if (loading) return <LoadingSkeleton />;
+  if (error || !split) return <ErrorState message={error || 'Payment link not found'} />;
   if (paymentSuccess) {
     return (
       <PaymentSuccessScreen
@@ -382,8 +452,11 @@ export default function PaymentPage() {
   const isUserInfoComplete = userName.trim() && userEmail.trim() && userEmail.includes('@');
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: 'var(--background)', paddingBottom: '2rem' }}>
-      {/* Header */}
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 50%, #EEF2FF 100%)',
+    }}>
+      {/* Premium Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -391,89 +464,134 @@ export default function PaymentPage() {
           position: 'sticky',
           top: 0,
           zIndex: 50,
-          backgroundColor: 'var(--background)',
-          borderBottom: '1px solid var(--border-light)',
+          background: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
           paddingTop: 'env(safe-area-inset-top, 0px)',
         }}
       >
-        <div style={{ maxWidth: '448px', margin: '0 auto', padding: '12px 16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+        <div style={{ maxWidth: '420px', margin: '0 auto', padding: '16px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
             <div style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '8px',
-              backgroundColor: '#3B82F6',
+              width: '38px',
+              height: '38px',
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
             }}>
-              <Zap size={18} color="white" />
+              <Zap size={20} color="white" strokeWidth={2.5} />
             </div>
-            <span style={{ fontWeight: 700, fontSize: '18px', color: 'var(--text-primary)' }}>ZapSplit</span>
+            <span style={{ fontWeight: 800, fontSize: '20px', color: '#0F172A', letterSpacing: '-0.5px' }}>ZapSplit</span>
           </div>
         </div>
       </motion.header>
 
-      <main style={{ maxWidth: '448px', margin: '0 auto', padding: '0 16px' }}>
-        {/* Split Header */}
+      <main style={{ maxWidth: '420px', margin: '0 auto', padding: '0 20px 40px' }}>
+        {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          style={{ paddingTop: '24px', textAlign: 'center' }}
+          style={{ paddingTop: '32px', textAlign: 'center' }}
         >
-          {/* Creator Avatar */}
-          <div style={{
-            width: '80px',
-            height: '80px',
-            margin: '0 auto',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            fontSize: '28px',
-            fontWeight: 700,
-            boxShadow: '0 10px 25px rgba(59, 130, 246, 0.3)',
-          }}>
-            {split.creator?.full_name?.charAt(0) || '?'}
+          {/* Premium Avatar */}
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <div style={{
+              width: '100px',
+              height: '100px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontSize: '36px',
+              fontWeight: 700,
+              boxShadow: '0 20px 40px rgba(59, 130, 246, 0.3), 0 0 0 4px rgba(255, 255, 255, 0.9)',
+            }}>
+              {split.creator?.full_name?.charAt(0).toUpperCase() || '?'}
+            </div>
+            <div style={{
+              position: 'absolute',
+              bottom: '-4px',
+              right: '-4px',
+              width: '32px',
+              height: '32px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 8px rgba(16, 185, 129, 0.3), 0 0 0 3px white',
+            }}>
+              <CheckCircle2 size={18} color="white" />
+            </div>
           </div>
 
-          <h1 style={{ marginTop: '16px', fontSize: '24px', fontWeight: 700, color: 'var(--text-primary)' }}>
+          <h1 style={{
+            marginTop: '24px',
+            fontSize: '26px',
+            fontWeight: 800,
+            color: '#0F172A',
+            letterSpacing: '-0.5px',
+            lineHeight: 1.2,
+          }}>
             {split.title || 'Bill Split'}
           </h1>
 
-          <p style={{ marginTop: '4px', color: 'var(--text-muted)' }}>
-            from <span style={{ fontWeight: 500, color: 'var(--text-secondary)' }}>
+          <p style={{ marginTop: '8px', color: '#64748B', fontSize: '16px' }}>
+            from <span style={{ fontWeight: 600, color: '#334155' }}>
               {split.creator?.full_name || 'Someone'}
             </span>
           </p>
-
-          <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontSize: '14px', color: 'var(--text-muted)' }}>
-            <Clock size={14} />
-            <span>{formatDate(split.created_at)}</span>
-          </div>
 
           <div style={{
             marginTop: '12px',
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '8px',
-            padding: '8px 16px',
-            borderRadius: '9999px',
-            backgroundColor: 'var(--surface)',
-            border: '1px solid var(--border-light)',
+            gap: '6px',
+            color: '#94A3B8',
+            fontSize: '14px',
           }}>
-            <Receipt size={16} color="#3B82F6" />
-            <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+            <Clock size={14} />
+            <span>{formatDate(split.created_at)}</span>
+          </div>
+
+          {/* Total Badge */}
+          <div style={{
+            marginTop: '20px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '10px',
+            padding: '12px 24px',
+            borderRadius: '100px',
+            background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)',
+            border: '1.5px solid #E2E8F0',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+          }}>
+            <div style={{
+              width: '28px',
+              height: '28px',
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <Receipt size={14} color="white" />
+            </div>
+            <span style={{ fontWeight: 700, fontSize: '18px', color: '#0F172A' }}>
               {formatCurrency(split.total_amount)}
             </span>
-            <span style={{ color: 'var(--text-muted)' }}>total</span>
+            <span style={{ color: '#94A3B8', fontWeight: 500 }}>total</span>
           </div>
         </motion.div>
 
         {/* User Info Section */}
-        <div style={{ marginTop: '32px' }}>
+        <div style={{ marginTop: '36px' }}>
           <UserInfoForm
             name={userName}
             email={userEmail}
@@ -489,15 +607,36 @@ export default function PaymentPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          style={{ marginTop: '32px' }}
+          style={{ marginTop: '36px' }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <h2 style={{ fontWeight: 700, fontSize: '18px', color: 'var(--text-primary)' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '20px',
+          }}>
+            <h2 style={{
+              fontWeight: 700,
+              fontSize: '18px',
+              color: '#0F172A',
+              letterSpacing: '-0.3px',
+            }}>
               Select Your Items
             </h2>
-            <span style={{ fontSize: '14px', color: 'var(--text-muted)', backgroundColor: 'var(--surface)', padding: '6px 12px', borderRadius: '20px' }}>
+            <div style={{
+              padding: '8px 14px',
+              borderRadius: '100px',
+              background: selectedItems.size > 0
+                ? 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)'
+                : '#F1F5F9',
+              color: selectedItems.size > 0 ? 'white' : '#64748B',
+              fontSize: '13px',
+              fontWeight: 600,
+              boxShadow: selectedItems.size > 0 ? '0 4px 12px rgba(59, 130, 246, 0.3)' : 'none',
+              transition: 'all 0.3s ease',
+            }}>
               {selectedItems.size} of {items.length}
-            </span>
+            </div>
           </div>
 
           <ItemList
@@ -511,7 +650,7 @@ export default function PaymentPage() {
         </motion.div>
 
         {/* Payment Summary */}
-        <div style={{ marginTop: '32px' }}>
+        <div style={{ marginTop: '36px' }}>
           <PaymentSummary
             itemsTotal={itemsTotal}
             taxShare={taxShare}
@@ -527,17 +666,27 @@ export default function PaymentPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             style={{
-              marginTop: '16px',
-              padding: '16px',
-              borderRadius: '12px',
-              backgroundColor: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
+              marginTop: '20px',
+              padding: '20px',
+              borderRadius: '20px',
+              background: 'linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%)',
+              border: '1.5px solid #FECACA',
             }}
           >
-            <p style={{ fontSize: '14px', color: '#EF4444' }}>{paymentError}</p>
+            <p style={{ fontSize: '14px', color: '#DC2626', fontWeight: 500 }}>{paymentError}</p>
             <button
               onClick={() => setPaymentError(null)}
-              style={{ marginTop: '8px', fontSize: '14px', color: 'var(--text-muted)', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}
+              style={{
+                marginTop: '12px',
+                padding: '10px 20px',
+                borderRadius: '12px',
+                background: '#DC2626',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: 600,
+                border: 'none',
+                cursor: 'pointer',
+              }}
             >
               Try again
             </button>
@@ -545,7 +694,7 @@ export default function PaymentPage() {
         )}
 
         {/* Pay Button */}
-        <div style={{ marginTop: '32px', paddingBottom: 'max(env(safe-area-inset-bottom, 20px), 20px)' }}>
+        <div style={{ marginTop: '36px', paddingBottom: 'max(env(safe-area-inset-bottom, 20px), 20px)' }}>
           <StripeProvider>
             <PayButton
               amount={total}
@@ -565,43 +714,79 @@ export default function PaymentPage() {
   );
 }
 
-// Payment success component
+// Premium Payment success
 function PaymentSuccessScreen({ recipientName, amount }: { recipientName: string; amount: number }) {
   return (
-    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center p-4">
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(180deg, #ECFDF5 0%, #D1FAE5 50%, #A7F3D0 100%)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '24px',
+    }}>
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="text-center space-y-6 max-w-sm"
+        style={{ textAlign: 'center', maxWidth: '340px' }}
       >
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-          className="w-24 h-24 mx-auto rounded-full bg-[var(--success)]/10 flex items-center justify-center"
+          style={{
+            width: '100px',
+            height: '100px',
+            margin: '0 auto',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 20px 40px rgba(16, 185, 129, 0.3), 0 0 0 4px rgba(255, 255, 255, 0.9)',
+          }}
         >
-          <CheckCircle2 size={48} className="text-[var(--success)]" />
+          <CheckCircle2 size={48} color="white" />
         </motion.div>
 
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">
-            Payment Successful!
-          </h1>
-          <p className="text-[var(--text-muted)]">
-            You paid <span className="font-semibold text-[var(--text-secondary)]">{formatCurrency(amount)}</span> to{' '}
-            <span className="font-semibold text-[var(--text-secondary)]">{recipientName}</span>
-          </p>
-        </div>
+        <h1 style={{
+          marginTop: '28px',
+          fontSize: '28px',
+          fontWeight: 800,
+          color: '#064E3B',
+          letterSpacing: '-0.5px',
+        }}>
+          Payment Successful!
+        </h1>
+
+        <p style={{
+          marginTop: '12px',
+          color: '#047857',
+          fontSize: '16px',
+          lineHeight: 1.5,
+        }}>
+          You paid <span style={{ fontWeight: 700 }}>{formatCurrency(amount)}</span> to{' '}
+          <span style={{ fontWeight: 700 }}>{recipientName}</span>
+        </p>
 
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="pt-4"
+          style={{ marginTop: '32px' }}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--surface)] border border-[var(--border-light)]">
-            <Zap size={16} className="text-[var(--primary)]" />
-            <span className="text-sm text-[var(--text-muted)]">Powered by ZapSplit</span>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '12px 20px',
+            borderRadius: '100px',
+            background: 'rgba(255, 255, 255, 0.8)',
+            backdropFilter: 'blur(8px)',
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06)',
+          }}>
+            <Zap size={18} color="#10B981" />
+            <span style={{ fontSize: '14px', fontWeight: 600, color: '#064E3B' }}>Powered by ZapSplit</span>
           </div>
         </motion.div>
       </motion.div>

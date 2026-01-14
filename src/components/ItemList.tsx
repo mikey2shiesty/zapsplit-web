@@ -28,7 +28,7 @@ export default function ItemList({
   claimedBy = new Map(),
 }: ItemListProps) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       {items.map((item, index) => {
         const isSelected = selectedItems.has(index);
         const isShared = sharedItems.has(index);
@@ -49,39 +49,48 @@ export default function ItemList({
                 position: 'relative',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '12px',
-                padding: '16px',
-                borderRadius: '16px',
+                gap: '16px',
+                padding: '18px 20px',
+                borderRadius: '20px',
                 cursor: 'pointer',
-                transition: 'all 0.2s ease',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 border: isSelected ? '2px solid #3B82F6' : '2px solid transparent',
-                backgroundColor: isSelected ? 'rgba(59, 130, 246, 0.08)' : 'var(--surface)',
+                background: isSelected
+                  ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(37, 99, 235, 0.04) 100%)'
+                  : '#FFFFFF',
+                boxShadow: isSelected
+                  ? '0 8px 24px rgba(59, 130, 246, 0.15)'
+                  : '0 2px 12px rgba(0, 0, 0, 0.04)',
               }}
             >
-              {/* Checkbox */}
+              {/* Premium Checkbox */}
               <div
                 style={{
-                  width: '24px',
-                  height: '24px',
-                  borderRadius: '50%',
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '10px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
-                  transition: 'all 0.2s ease',
-                  backgroundColor: isSelected ? '#3B82F6' : 'var(--border-light)',
-                  color: isSelected ? 'white' : 'transparent',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  background: isSelected
+                    ? 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)'
+                    : 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)',
+                  boxShadow: isSelected
+                    ? '0 4px 12px rgba(59, 130, 246, 0.3)'
+                    : '0 1px 3px rgba(0, 0, 0, 0.04)',
                 }}
               >
                 <AnimatePresence mode="wait">
                   {isSelected && (
                     <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
-                      transition={{ duration: 0.15 }}
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ duration: 0.2, type: 'spring', stiffness: 500 }}
                     >
-                      <Check size={14} strokeWidth={3} />
+                      <Check size={16} color="white" strokeWidth={3} />
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -89,14 +98,16 @@ export default function ItemList({
 
               {/* Item Details */}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span
                     style={{
-                      fontWeight: 500,
-                      color: 'var(--text-primary)',
+                      fontWeight: 600,
+                      fontSize: '15px',
+                      color: isSelected ? '#1E40AF' : '#0F172A',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
+                      transition: 'color 0.2s ease',
                     }}
                   >
                     {item.name}
@@ -104,22 +115,34 @@ export default function ItemList({
                   {item.quantity > 1 && (
                     <span style={{
                       fontSize: '12px',
-                      color: 'var(--text-muted)',
-                      backgroundColor: 'var(--border-light)',
-                      padding: '2px 6px',
-                      borderRadius: '4px',
+                      fontWeight: 600,
+                      color: '#64748B',
+                      background: 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)',
+                      padding: '4px 10px',
+                      borderRadius: '8px',
                     }}>
-                      ×{item.quantity}
+                      x{item.quantity}
                     </span>
                   )}
                 </div>
 
                 {/* Claimed by indicator */}
                 {claimers.length > 0 && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
-                    <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
+                    <div style={{
+                      width: '16px',
+                      height: '16px',
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                      <Users size={8} color="white" />
+                    </div>
+                    <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 500 }}>
                       {claimers.length === 1
-                        ? `${claimers[0]} claimed this`
+                        ? `${claimers[0]} claimed`
                         : `${claimers.length} people claimed`}
                     </span>
                   </div>
@@ -130,16 +153,25 @@ export default function ItemList({
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
                 <span
                   style={{
-                    fontWeight: 600,
+                    fontWeight: 700,
+                    fontSize: '16px',
                     fontVariantNumeric: 'tabular-nums',
-                    color: isSelected ? '#3B82F6' : 'var(--text-primary)',
+                    color: isSelected ? '#2563EB' : '#0F172A',
+                    transition: 'color 0.2s ease',
                   }}
                 >
                   {formatCurrency(itemPrice)}
                 </span>
                 {isShared && (
-                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                    ÷{shareCount}
+                  <span style={{
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    color: '#10B981',
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    padding: '2px 8px',
+                    borderRadius: '6px',
+                  }}>
+                    ÷{shareCount} split
                   </span>
                 )}
               </div>
@@ -155,22 +187,25 @@ export default function ItemList({
                   }}
                   style={{
                     position: 'absolute',
-                    right: '-8px',
-                    top: '-8px',
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
+                    right: '-10px',
+                    top: '-10px',
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '12px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                    border: isShared ? 'none' : '1px solid var(--border)',
-                    backgroundColor: isShared ? '#10B981' : 'var(--surface-elevated)',
-                    color: isShared ? 'white' : 'var(--text-muted)',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                    border: 'none',
+                    background: isShared
+                      ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
+                      : '#FFFFFF',
+                    color: isShared ? 'white' : '#64748B',
                     cursor: 'pointer',
+                    transition: 'all 0.2s ease',
                   }}
                 >
-                  <Users size={14} />
+                  <Users size={16} />
                 </motion.button>
               )}
             </div>
