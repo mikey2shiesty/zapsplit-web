@@ -459,12 +459,12 @@ export default function PaymentPage() {
       // Create payment record
       await createPaymentRecord(
         split.id,
-        split.payment_link_id || '',
+        split.payment_link_id || null,
         userEmail,
         userName,
         total,
         split.creator_id,
-        split.creator?.payid || ''
+        split.creator?.payid || null
       );
     }
 

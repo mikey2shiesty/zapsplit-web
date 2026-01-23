@@ -180,12 +180,12 @@ export async function saveItemClaims(
 // Create payment record
 export async function createPaymentRecord(
   splitId: string,
-  paymentLinkId: string,
+  paymentLinkId: string | null,
   payerEmail: string,
   payerName: string,
   amount: number,
   recipientUserId: string,
-  recipientPayId: string
+  recipientPayId: string | null
 ): Promise<string | null> {
   const clientPaymentId = `zap_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
@@ -193,14 +193,14 @@ export async function createPaymentRecord(
     .from('web_payments')
     .insert({
       split_id: splitId,
-      payment_link_id: paymentLinkId,
+      payment_link_id: paymentLinkId || null,
       payer_email: payerEmail,
       payer_name: payerName,
       amount: amount,
       azupay_client_payment_id: clientPaymentId,
       status: 'pending',
       recipient_user_id: recipientUserId,
-      recipient_payid: recipientPayId,
+      recipient_payid: recipientPayId || null,
     })
     .select('id')
     .single();
