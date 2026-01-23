@@ -209,7 +209,7 @@ export async function createPaymentRecord(
       payer_name: payerName,
       amount: amount,
       azupay_client_payment_id: clientPaymentId,
-      status: 'completed',
+      status: 'settled',
       recipient_user_id: recipientUserId,
       recipient_payid: recipientPayId || null,
     })
