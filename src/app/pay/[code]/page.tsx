@@ -13,7 +13,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import { getSplitByCode, SplitWithDetails, SplitItem } from '@/lib/supabase';
+import { getSplitByCode, SplitWithDetails, SplitItem, saveItemClaims, createPaymentRecord } from '@/lib/supabase';
 import ItemList from '@/components/ItemList';
 import PaymentSummary from '@/components/PaymentSummary';
 import PayButton from '@/components/PayButton';
@@ -434,7 +434,42 @@ export default function PaymentPage() {
     });
   };
 
-  const handlePaymentSuccess = () => setPaymentSuccess(true);
+  const handlePaymentSuccess = async () => {
+    // Save item claims to database
+    if (split && selectedItems.size > 0) {
+      const items = (split.items || []) as SplitItem[];
+      const claims = Array.from(selectedItems).map(index => {
+        const item = items[index];
+        return {
+          itemIndex: index,
+          itemName: item?.name || `Item ${index + 1}`,
+          itemAmount: item?.price || 0,
+          claimedByEmail: userEmail,
+          claimedByName: userName,
+          shareCount: sharedItems.get(index) || 1,
+        };
+      });
+
+      await saveItemClaims(
+        split.id,
+        split.payment_link_id || '',
+        claims
+      );
+
+      // Create payment record
+      await createPaymentRecord(
+        split.id,
+        split.payment_link_id || '',
+        userEmail,
+        userName,
+        total,
+        split.creator_id,
+        split.creator?.payid || ''
+      );
+    }
+
+    setPaymentSuccess(true);
+  };
   const handlePaymentError = (errorMessage: string) => setPaymentError(errorMessage);
 
   if (loading) return <LoadingSkeleton />;

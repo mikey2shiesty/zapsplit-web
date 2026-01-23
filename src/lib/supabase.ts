@@ -58,6 +58,7 @@ export interface SplitWithDetails extends Split {
   items?: SplitItem[];
   creator?: Profile;
   claims?: ItemClaim[];
+  payment_link_id?: string;
 }
 
 // Fetch split by payment link code
@@ -134,6 +135,7 @@ export async function getSplitByCode(code: string): Promise<SplitWithDetails | n
     items,
     creator,
     claims: claims || [],
+    payment_link_id: paymentLink.id,
   };
 }
 
