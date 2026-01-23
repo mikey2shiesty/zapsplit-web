@@ -177,7 +177,7 @@ export async function saveItemClaims(
   return true;
 }
 
-// Create payment record
+// Create payment record and update participant status
 export async function createPaymentRecord(
   splitId: string,
   paymentLinkId: string | null,
@@ -189,6 +189,17 @@ export async function createPaymentRecord(
 ): Promise<string | null> {
   const clientPaymentId = `zap_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
+  console.log('Creating payment record with:', {
+    splitId,
+    paymentLinkId,
+    payerEmail,
+    payerName,
+    amount,
+    recipientUserId,
+    recipientPayId,
+    clientPaymentId,
+  });
+
   const { data, error } = await supabase
     .from('web_payments')
     .insert({
@@ -198,7 +209,7 @@ export async function createPaymentRecord(
       payer_name: payerName,
       amount: amount,
       azupay_client_payment_id: clientPaymentId,
-      status: 'pending',
+      status: 'completed',
       recipient_user_id: recipientUserId,
       recipient_payid: recipientPayId || null,
     })
@@ -207,7 +218,37 @@ export async function createPaymentRecord(
 
   if (error) {
     console.error('Error creating payment record:', error);
+    console.error('Error details:', JSON.stringify(error, null, 2));
     return null;
+  }
+
+  console.log('Payment record created:', data.id);
+
+  // Try to find the payer in profiles by email and update their participant record
+  const { data: payerProfile } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('email', payerEmail)
+    .single();
+
+  if (payerProfile) {
+    // Found the payer - update their participant record
+    const { error: updateError } = await supabase
+      .from('split_participants')
+      .update({
+        amount_paid: amount,
+        status: 'paid',
+      })
+      .eq('split_id', splitId)
+      .eq('user_id', payerProfile.id);
+
+    if (updateError) {
+      console.error('Error updating participant:', updateError);
+    } else {
+      console.log('Updated participant payment status for user:', payerProfile.id);
+    }
+  } else {
+    console.log('Payer not found in profiles, cannot update participant status');
   }
 
   return data.id;
