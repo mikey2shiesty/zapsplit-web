@@ -681,6 +681,7 @@ export default function PaymentPage() {
             onToggleItem={handleToggleItem}
             onToggleShared={handleToggleShared}
             claimedBy={claimedBy}
+            currentUserEmail={userEmail}
           />
         </motion.div>
 
