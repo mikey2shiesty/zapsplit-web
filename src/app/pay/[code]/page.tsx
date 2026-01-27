@@ -372,11 +372,12 @@ export default function PaymentPage() {
       return sum + ((unitPrice * qty) / shareCount);
     }, 0);
 
-    const billSubtotal = items.reduce((sum, item) => sum + item.price, 0);
+    const billSubtotal = items.reduce((sum, item) => sum + Number(item.price), 0);
     const proportion = billSubtotal > 0 ? selectedItemsTotal / billSubtotal : 0;
 
-    const totalTax = (split.total_amount - billSubtotal) * 0.5 || 0;
-    const totalTip = (split.total_amount - billSubtotal) * 0.5 || 0;
+    // Use actual tax/tip amounts from split, or calculate from difference
+    const totalTax = Number(split.tax_amount) || 0;
+    const totalTip = Number(split.tip_amount) || 0;
 
     const calcTaxShare = totalTax * proportion;
     const calcTipShare = totalTip * proportion;

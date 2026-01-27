@@ -11,6 +11,8 @@ export interface Split {
   title: string;
   description?: string;
   total_amount: number;
+  tax_amount?: number;
+  tip_amount?: number;
   created_at: string;
   creator_id: string;
   status: string;
