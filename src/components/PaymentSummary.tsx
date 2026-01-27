@@ -1,21 +1,19 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Receipt, Percent, Sparkles } from 'lucide-react';
+import { Receipt, CreditCard, Sparkles } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 
 interface PaymentSummaryProps {
   itemsTotal: number;
-  taxShare: number;
-  tipShare: number;
+  serviceFee: number;
   total: number;
   selectedCount: number;
 }
 
 export default function PaymentSummary({
   itemsTotal,
-  taxShare,
-  tipShare,
+  serviceFee,
   total,
   selectedCount,
 }: PaymentSummaryProps) {
@@ -120,8 +118,8 @@ export default function PaymentSummary({
           </AnimatePresence>
         </div>
 
-        {/* Tax */}
-        {taxShare > 0 && (
+        {/* Service Fee */}
+        {serviceFee > 0 && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -145,9 +143,9 @@ export default function PaymentSummary({
                 justifyContent: 'center',
                 boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)',
               }}>
-                <Percent size={16} color="#64748B" />
+                <CreditCard size={16} color="#64748B" />
               </div>
-              <span style={{ color: '#475569', fontSize: '15px', fontWeight: 500 }}>Tax</span>
+              <span style={{ color: '#475569', fontSize: '15px', fontWeight: 500 }}>Service Fee</span>
             </div>
             <span style={{
               fontWeight: 600,
@@ -155,47 +153,7 @@ export default function PaymentSummary({
               color: '#0F172A',
               fontSize: '15px',
             }}>
-              {formatCurrency(taxShare)}
-            </span>
-          </motion.div>
-        )}
-
-        {/* Tip */}
-        {tipShare > 0 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '14px 16px',
-              borderRadius: '14px',
-              background: '#F8FAFC',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '10px',
-                background: '#FFFFFF',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)',
-              }}>
-                <span style={{ fontSize: '14px' }}>💝</span>
-              </div>
-              <span style={{ color: '#475569', fontSize: '15px', fontWeight: 500 }}>Tip</span>
-            </div>
-            <span style={{
-              fontWeight: 600,
-              fontVariantNumeric: 'tabular-nums',
-              color: '#0F172A',
-              fontSize: '15px',
-            }}>
-              {formatCurrency(tipShare)}
+              {formatCurrency(serviceFee)}
             </span>
           </motion.div>
         )}

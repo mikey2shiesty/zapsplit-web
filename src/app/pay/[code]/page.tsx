@@ -355,10 +355,14 @@ export default function PaymentPage() {
     fetchSplit();
   }, [code]);
 
+  // Service fee constants
+  const SERVICE_FEE_PERCENT = 0.035; // 3.5%
+  const SERVICE_FEE_FIXED = 0.50; // $0.50
+
   // Calculate totals
-  const { itemsTotal, taxShare, tipShare, total } = useMemo(() => {
+  const { itemsTotal, serviceFee, total } = useMemo(() => {
     if (!split?.items) {
-      return { itemsTotal: 0, taxShare: 0, tipShare: 0, total: 0 };
+      return { itemsTotal: 0, serviceFee: 0, total: 0 };
     }
 
     const items = split.items as SplitItem[];
@@ -372,26 +376,17 @@ export default function PaymentPage() {
       return sum + ((unitPrice * qty) / shareCount);
     }, 0);
 
-    const billSubtotal = items.reduce((sum, item) => sum + Number(item.price), 0);
-    const proportion = billSubtotal > 0 ? selectedItemsTotal / billSubtotal : 0;
+    // Service fee: 3.5% + $0.50 (only if items selected)
+    const calcServiceFee = selectedItemsTotal > 0
+      ? (selectedItemsTotal * SERVICE_FEE_PERCENT) + SERVICE_FEE_FIXED
+      : 0;
 
-    // Use actual tax/tip amounts from split, or calculate from difference (like mobile does)
-    const storedTax = Number(split.tax_amount) || 0;
-    const storedTip = Number(split.tip_amount) || 0;
-
-    // If no stored tax/tip, calculate from difference between total and items
-    const totalTaxTip = storedTax + storedTip > 0
-      ? storedTax + storedTip
-      : Math.max(0, Number(split.total_amount) - billSubtotal);
-
-    const calcTaxTipShare = totalTaxTip * proportion;
-    const calcTotal = selectedItemsTotal + calcTaxTipShare;
+    const calcTotal = selectedItemsTotal + calcServiceFee;
 
     return {
-      itemsTotal: selectedItemsTotal,
-      taxShare: calcTaxTipShare / 2, // Split evenly for display
-      tipShare: calcTaxTipShare / 2,
-      total: calcTotal,
+      itemsTotal: Math.round(selectedItemsTotal * 100) / 100,
+      serviceFee: Math.round(calcServiceFee * 100) / 100,
+      total: Math.round(calcTotal * 100) / 100,
     };
   }, [split, selectedItems, sharedItems, selectedQuantities]);
 
@@ -737,8 +732,7 @@ export default function PaymentPage() {
         <div style={{ marginTop: '36px' }}>
           <PaymentSummary
             itemsTotal={itemsTotal}
-            taxShare={taxShare}
-            tipShare={tipShare}
+            serviceFee={serviceFee}
             total={total}
             selectedCount={selectedItems.size}
           />
