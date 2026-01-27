@@ -200,78 +200,73 @@ export default function ItemList({
                 {/* Quantity selector for items with multiple quantities */}
                 {isSelected && !isDisabled && itemQty > 1 && qtyRemaining > 0 && (
                   <div style={{
-                    display: 'flex',
+                    display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '12px',
+                    gap: '6px',
                     marginTop: '8px',
                     background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)',
-                    padding: '8px 12px',
-                    borderRadius: '12px',
+                    padding: '6px 10px',
+                    borderRadius: '10px',
                   }}>
-                    <span style={{ fontSize: '13px', color: '#64748B', fontWeight: 500 }}>
-                      Quantity:
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onQuantityChange(index, -1);
+                      }}
+                      disabled={selectedQty <= 1}
+                      style={{
+                        width: '26px',
+                        height: '26px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        background: selectedQty <= 1
+                          ? '#E2E8F0'
+                          : 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+                        color: selectedQty <= 1 ? '#94A3B8' : 'white',
+                        cursor: selectedQty <= 1 ? 'not-allowed' : 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: selectedQty <= 1 ? 'none' : '0 2px 8px rgba(59, 130, 246, 0.3)',
+                      }}
+                    >
+                      <Minus size={12} />
+                    </button>
+                    <span style={{
+                      minWidth: '20px',
+                      textAlign: 'center',
+                      fontWeight: 700,
+                      fontSize: '14px',
+                      color: '#0F172A',
+                    }}>
+                      {selectedQty}
                     </span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onQuantityChange(index, -1);
-                        }}
-                        disabled={selectedQty <= 1}
-                        style={{
-                          width: '28px',
-                          height: '28px',
-                          borderRadius: '8px',
-                          border: 'none',
-                          background: selectedQty <= 1
-                            ? '#E2E8F0'
-                            : 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
-                          color: selectedQty <= 1 ? '#94A3B8' : 'white',
-                          cursor: selectedQty <= 1 ? 'not-allowed' : 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          boxShadow: selectedQty <= 1 ? 'none' : '0 2px 8px rgba(59, 130, 246, 0.3)',
-                        }}
-                      >
-                        <Minus size={14} />
-                      </button>
-                      <span style={{
-                        minWidth: '32px',
-                        textAlign: 'center',
-                        fontWeight: 700,
-                        fontSize: '15px',
-                        color: '#0F172A',
-                      }}>
-                        {selectedQty}
-                      </span>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onQuantityChange(index, 1);
-                        }}
-                        disabled={selectedQty >= qtyRemaining}
-                        style={{
-                          width: '28px',
-                          height: '28px',
-                          borderRadius: '8px',
-                          border: 'none',
-                          background: selectedQty >= qtyRemaining
-                            ? '#E2E8F0'
-                            : 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
-                          color: selectedQty >= qtyRemaining ? '#94A3B8' : 'white',
-                          cursor: selectedQty >= qtyRemaining ? 'not-allowed' : 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          boxShadow: selectedQty >= qtyRemaining ? 'none' : '0 2px 8px rgba(59, 130, 246, 0.3)',
-                        }}
-                      >
-                        <Plus size={14} />
-                      </button>
-                    </div>
-                    <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 500 }}>
-                      of {qtyRemaining} available
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onQuantityChange(index, 1);
+                      }}
+                      disabled={selectedQty >= qtyRemaining}
+                      style={{
+                        width: '26px',
+                        height: '26px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        background: selectedQty >= qtyRemaining
+                          ? '#E2E8F0'
+                          : 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+                        color: selectedQty >= qtyRemaining ? '#94A3B8' : 'white',
+                        cursor: selectedQty >= qtyRemaining ? 'not-allowed' : 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: selectedQty >= qtyRemaining ? 'none' : '0 2px 8px rgba(59, 130, 246, 0.3)',
+                      }}
+                    >
+                      <Plus size={12} />
+                    </button>
+                    <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 500, marginLeft: '2px' }}>
+                      /{qtyRemaining}
                     </span>
                   </div>
                 )}
