@@ -375,18 +375,22 @@ export default function PaymentPage() {
     const billSubtotal = items.reduce((sum, item) => sum + Number(item.price), 0);
     const proportion = billSubtotal > 0 ? selectedItemsTotal / billSubtotal : 0;
 
-    // Use actual tax/tip amounts from split, or calculate from difference
-    const totalTax = Number(split.tax_amount) || 0;
-    const totalTip = Number(split.tip_amount) || 0;
+    // Use actual tax/tip amounts from split, or calculate from difference (like mobile does)
+    const storedTax = Number(split.tax_amount) || 0;
+    const storedTip = Number(split.tip_amount) || 0;
 
-    const calcTaxShare = totalTax * proportion;
-    const calcTipShare = totalTip * proportion;
-    const calcTotal = selectedItemsTotal + calcTaxShare + calcTipShare;
+    // If no stored tax/tip, calculate from difference between total and items
+    const totalTaxTip = storedTax + storedTip > 0
+      ? storedTax + storedTip
+      : Math.max(0, Number(split.total_amount) - billSubtotal);
+
+    const calcTaxTipShare = totalTaxTip * proportion;
+    const calcTotal = selectedItemsTotal + calcTaxTipShare;
 
     return {
       itemsTotal: selectedItemsTotal,
-      taxShare: calcTaxShare,
-      tipShare: calcTipShare,
+      taxShare: calcTaxTipShare / 2, // Split evenly for display
+      tipShare: calcTaxTipShare / 2,
       total: calcTotal,
     };
   }, [split, selectedItems, sharedItems, selectedQuantities]);
