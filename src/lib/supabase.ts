@@ -44,6 +44,7 @@ export interface ItemClaim {
   claimed_by_email: string;
   claimed_by_name: string;
   share_count: number;
+  quantity_claimed?: number;
 }
 
 export interface Profile {
@@ -108,11 +109,12 @@ export async function getSplitByCode(code: string): Promise<SplitWithDetails | n
     }
   }
 
-  // Get items from split_items table
+  // Get items from split_items table (ordered by position to match item_index in claims)
   const { data: itemsData } = await supabase
     .from('split_items')
-    .select('id, name, quantity, unit_price, total_price')
-    .eq('split_id', split.id);
+    .select('id, name, quantity, unit_price, total_price, position')
+    .eq('split_id', split.id)
+    .order('position', { ascending: true });
 
   // Transform items to expected format
   const items: SplitItem[] = (itemsData || []).map(item => ({
@@ -150,6 +152,7 @@ export async function saveItemClaims(
     claimedByEmail: string;
     claimedByName: string;
     shareCount?: number;
+    quantityClaimed?: number;
   }[]
 ): Promise<boolean> {
   const insertData = claims.map(claim => ({
@@ -161,6 +164,7 @@ export async function saveItemClaims(
     claimed_by_email: claim.claimedByEmail,
     claimed_by_name: claim.claimedByName,
     share_count: claim.shareCount || 1,
+    quantity_claimed: claim.quantityClaimed || 1,
   }));
 
   const { error } = await supabase

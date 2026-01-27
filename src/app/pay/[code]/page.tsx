@@ -325,6 +325,7 @@ export default function PaymentPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   const [sharedItems, setSharedItems] = useState<Map<number, number>>(new Map());
+  const [selectedQuantities, setSelectedQuantities] = useState<Map<number, number>>(new Map());
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [userInfoCollapsed, setUserInfoCollapsed] = useState(false);
@@ -365,7 +366,10 @@ export default function PaymentPage() {
       const item = items[index];
       if (!item) return sum;
       const shareCount = sharedItems.get(index) || 1;
-      return sum + (item.price / shareCount);
+      const qty = selectedQuantities.get(index) || 1;
+      const itemQty = Number(item.quantity) || 1;
+      const unitPrice = Number(item.unit_price) || (Number(item.price) / itemQty);
+      return sum + ((unitPrice * qty) / shareCount);
     }, 0);
 
     const billSubtotal = items.reduce((sum, item) => sum + item.price, 0);
@@ -384,15 +388,17 @@ export default function PaymentPage() {
       tipShare: calcTipShare,
       total: calcTotal,
     };
-  }, [split, selectedItems, sharedItems]);
+  }, [split, selectedItems, sharedItems, selectedQuantities]);
 
-  // Build claimed by map
-  const claimedBy = useMemo(() => {
-    const map = new Map<number, string[]>();
+  // Build claim info map with names and total quantity claimed
+  const claimInfo = useMemo(() => {
+    const map = new Map<number, { names: string[]; totalQtyClaimed: number }>();
     if (split?.claims) {
       split.claims.forEach(claim => {
-        const existing = map.get(claim.item_index) || [];
-        existing.push(claim.claimed_by_name);
+        const existing = map.get(claim.item_index) || { names: [], totalQtyClaimed: 0 };
+        existing.names.push(claim.claimed_by_name);
+        // Ensure numeric addition (database might return string)
+        existing.totalQtyClaimed += Number(claim.quantity_claimed) || 1;
         map.set(claim.item_index, existing);
       });
     }
@@ -410,8 +416,19 @@ export default function PaymentPage() {
           nextShared.delete(index);
           return nextShared;
         });
+        setSelectedQuantities(prevQty => {
+          const nextQty = new Map(prevQty);
+          nextQty.delete(index);
+          return nextQty;
+        });
       } else {
         next.add(index);
+        // Initialize quantity to 1 when selecting
+        setSelectedQuantities(prevQty => {
+          const nextQty = new Map(prevQty);
+          nextQty.set(index, 1);
+          return nextQty;
+        });
       }
       return next;
     });
@@ -434,19 +451,43 @@ export default function PaymentPage() {
     });
   };
 
+  const handleQuantityChange = (index: number, delta: number) => {
+    const items = (split?.items || []) as SplitItem[];
+    const item = items[index];
+    if (!item) return;
+
+    // Get total already claimed for this item (ensure numeric)
+    const claim = claimInfo.get(index);
+    const totalQtyClaimed = Number(claim?.totalQtyClaimed) || 0;
+    const itemQty = Number(item.quantity) || 1;
+    const qtyRemaining = Math.max(0, itemQty - totalQtyClaimed);
+
+    setSelectedQuantities(prev => {
+      const next = new Map(prev);
+      const current = next.get(index) || 1;
+      const newQty = Math.max(1, Math.min(qtyRemaining, current + delta));
+      next.set(index, newQty);
+      return next;
+    });
+  };
+
   const handlePaymentSuccess = async () => {
     // Save item claims to database
     if (split && selectedItems.size > 0) {
       const items = (split.items || []) as SplitItem[];
       const claims = Array.from(selectedItems).map(index => {
         const item = items[index];
+        const qty = selectedQuantities.get(index) || 1;
+        const itemQty = Number(item?.quantity) || 1;
+        const unitPrice = Number(item?.unit_price) || (Number(item?.price) || 0) / itemQty;
         return {
           itemIndex: index,
           itemName: item?.name || `Item ${index + 1}`,
-          itemAmount: item?.price || 0,
+          itemAmount: unitPrice * qty,
           claimedByEmail: userEmail,
           claimedByName: userName,
           shareCount: sharedItems.get(index) || 1,
+          quantityClaimed: qty,
         };
       });
 
@@ -678,9 +719,11 @@ export default function PaymentPage() {
             items={items}
             selectedItems={selectedItems}
             sharedItems={sharedItems}
+            selectedQuantities={selectedQuantities}
             onToggleItem={handleToggleItem}
             onToggleShared={handleToggleShared}
-            claimedBy={claimedBy}
+            onQuantityChange={handleQuantityChange}
+            claimInfo={claimInfo}
             currentUserEmail={userEmail}
           />
         </motion.div>

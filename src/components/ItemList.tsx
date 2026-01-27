@@ -1,32 +1,42 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Users, Lock } from 'lucide-react';
+import { Check, Users, Lock, Plus, Minus } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 
 interface Item {
   name: string;
   price: number;
   quantity: number;
+  unit_price: number;
+}
+
+interface ClaimInfo {
+  names: string[];
+  totalQtyClaimed: number;
 }
 
 interface ItemListProps {
   items: Item[];
   selectedItems: Set<number>;
   sharedItems: Map<number, number>;
+  selectedQuantities: Map<number, number>;
   onToggleItem: (index: number) => void;
   onToggleShared: (index: number) => void;
-  claimedBy?: Map<number, string[]>;
-  currentUserEmail?: string; // To check if current user already claimed
+  onQuantityChange: (index: number, delta: number) => void;
+  claimInfo?: Map<number, ClaimInfo>;
+  currentUserEmail?: string;
 }
 
 export default function ItemList({
   items,
   selectedItems,
   sharedItems,
+  selectedQuantities,
   onToggleItem,
   onToggleShared,
-  claimedBy = new Map(),
+  onQuantityChange,
+  claimInfo = new Map(),
   currentUserEmail = '',
 }: ItemListProps) {
   return (
@@ -35,14 +45,20 @@ export default function ItemList({
         const isSelected = selectedItems.has(index);
         const isShared = sharedItems.has(index);
         const shareCount = sharedItems.get(index) || 1;
-        const claimers = claimedBy.get(index) || [];
-        const itemPrice = isShared ? item.price / shareCount : item.price;
+        const claim = claimInfo.get(index) || { names: [], totalQtyClaimed: 0 };
+        const claimers = claim.names;
+        const totalQtyClaimed = Number(claim.totalQtyClaimed) || 0;
 
-        // Check if item is already claimed by someone else (not current user)
-        const isClaimedByOthers = claimers.length > 0 && !claimers.some(name =>
-          currentUserEmail && name.toLowerCase().includes(currentUserEmail.split('@')[0].toLowerCase())
-        );
-        const isDisabled = isClaimedByOthers;
+        // Calculate remaining quantity - ensure numeric comparison
+        const itemQty = Number(item.quantity) || 1;
+        const qtyRemaining = Math.max(0, itemQty - totalQtyClaimed);
+        const selectedQty = selectedQuantities.get(index) || 1;
+        const unitPrice = Number(item.unit_price) || (Number(item.price) / itemQty);
+        const itemPrice = isShared ? (unitPrice * selectedQty) / shareCount : unitPrice * selectedQty;
+
+        // Item is fully claimed if no quantity remaining
+        const isFullyClaimed = qtyRemaining === 0;
+        const isDisabled = isFullyClaimed;
 
         return (
           <motion.div
@@ -143,7 +159,7 @@ export default function ItemList({
                   >
                     {item.name}
                   </span>
-                  {item.quantity > 1 && (
+                  {itemQty > 1 && (
                     <span style={{
                       fontSize: '12px',
                       fontWeight: 600,
@@ -152,7 +168,7 @@ export default function ItemList({
                       padding: '4px 10px',
                       borderRadius: '8px',
                     }}>
-                      x{item.quantity}
+                      x{itemQty}
                     </span>
                   )}
                 </div>
@@ -172,9 +188,90 @@ export default function ItemList({
                       <Users size={8} color="white" />
                     </div>
                     <span style={{ fontSize: '12px', color: isDisabled ? '#10B981' : '#64748B', fontWeight: 500 }}>
-                      {claimers.length === 1
-                        ? `${claimers[0]} claimed this`
-                        : `${claimers.length} people claimed`}
+                      {itemQty > 1
+                        ? `${totalQtyClaimed} of ${itemQty} claimed`
+                        : claimers.length === 1
+                          ? `${claimers[0]} claimed this`
+                          : `${claimers.length} people claimed`}
+                    </span>
+                  </div>
+                )}
+
+                {/* Quantity selector for items with multiple quantities */}
+                {isSelected && !isDisabled && itemQty > 1 && qtyRemaining > 0 && (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    marginTop: '8px',
+                    background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)',
+                    padding: '8px 12px',
+                    borderRadius: '12px',
+                  }}>
+                    <span style={{ fontSize: '13px', color: '#64748B', fontWeight: 500 }}>
+                      Quantity:
+                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onQuantityChange(index, -1);
+                        }}
+                        disabled={selectedQty <= 1}
+                        style={{
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '8px',
+                          border: 'none',
+                          background: selectedQty <= 1
+                            ? '#E2E8F0'
+                            : 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+                          color: selectedQty <= 1 ? '#94A3B8' : 'white',
+                          cursor: selectedQty <= 1 ? 'not-allowed' : 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: selectedQty <= 1 ? 'none' : '0 2px 8px rgba(59, 130, 246, 0.3)',
+                        }}
+                      >
+                        <Minus size={14} />
+                      </button>
+                      <span style={{
+                        minWidth: '32px',
+                        textAlign: 'center',
+                        fontWeight: 700,
+                        fontSize: '15px',
+                        color: '#0F172A',
+                      }}>
+                        {selectedQty}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onQuantityChange(index, 1);
+                        }}
+                        disabled={selectedQty >= qtyRemaining}
+                        style={{
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '8px',
+                          border: 'none',
+                          background: selectedQty >= qtyRemaining
+                            ? '#E2E8F0'
+                            : 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+                          color: selectedQty >= qtyRemaining ? '#94A3B8' : 'white',
+                          cursor: selectedQty >= qtyRemaining ? 'not-allowed' : 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: selectedQty >= qtyRemaining ? 'none' : '0 2px 8px rgba(59, 130, 246, 0.3)',
+                        }}
+                      >
+                        <Plus size={14} />
+                      </button>
+                    </div>
+                    <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 500 }}>
+                      of {qtyRemaining} available
                     </span>
                   </div>
                 )}
