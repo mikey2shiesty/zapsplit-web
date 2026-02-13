@@ -145,14 +145,13 @@ export default function PayButton({
         <>
           <div style={{
             padding: '20px',
-            borderRadius: '20px',
-            background: '#FFFFFF',
-            border: '1.5px solid #E2E8F0',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+            borderRadius: '16px',
+            background: '#1a1a2e',
+            border: '1px solid #2a2a3e',
           }}>
             <PaymentElement
               options={{
-                layout: 'auto',
+                layout: 'tabs',
                 wallets: {
                   applePay: 'auto',
                   googlePay: 'auto',
