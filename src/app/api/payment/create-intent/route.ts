@@ -45,9 +45,7 @@ export async function POST(request: NextRequest) {
     const paymentIntent = await getStripe().paymentIntents.create({
       amount: amountInCents + PLATFORM_FEE, // Total charged includes platform fee
       currency: 'aud',
-      automatic_payment_methods: {
-        enabled: true,
-      },
+      payment_method_types: ['card', 'link'],
       application_fee_amount: PLATFORM_FEE,
       transfer_data: {
         destination: creatorStripeAccountId,
