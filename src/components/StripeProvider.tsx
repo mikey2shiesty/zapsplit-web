@@ -36,7 +36,7 @@ export default function StripeProvider({ children }: StripeProviderProps) {
         mode: 'payment',
         amount: 1000,
         currency: 'aud',
-        paymentMethodCreation: 'manual',
+        paymentMethodTypes: ['card', 'link'],
         appearance: {
           theme: 'night',
           variables: {

@@ -8,6 +8,7 @@ import {
   useStripe,
   useElements,
   PaymentElement,
+  ExpressCheckoutElement,
 } from '@stripe/react-stripe-js';
 
 interface PayButtonProps {
@@ -42,6 +43,13 @@ export default function PayButton({
   const platformFee = 0.50;
   const totalAmount = amount + platformFee;
 
+  // Update Elements amount when total changes (for Express Checkout to show correct amount)
+  useEffect(() => {
+    if (elements && totalAmount > 0) {
+      elements.update({ amount: Math.round(totalAmount * 100) });
+    }
+  }, [elements, totalAmount]);
+
   // Create payment intent when ready
   useEffect(() => {
     if (!isReady || !creatorStripeAccountId) return;
@@ -75,14 +83,40 @@ export default function PayButton({
     createPaymentIntent();
   }, [amount, creatorStripeAccountId, splitId, payerEmail, payerName, isReady, totalAmount]);
 
+  // Helper to create payment intent on-demand (for express checkout)
+  const createIntentOnDemand = async (): Promise<string | null> => {
+    if (clientSecret) return clientSecret;
+    try {
+      const response = await fetch('/api/payment/create-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: totalAmount,
+          creatorStripeAccountId,
+          splitId,
+          payerEmail,
+          payerName,
+        }),
+      });
+      const data = await response.json();
+      if (data.error) {
+        onError(data.error);
+        return null;
+      }
+      setClientSecret(data.clientSecret);
+      return data.clientSecret;
+    } catch (err: any) {
+      onError(err.message || 'Failed to create payment');
+      return null;
+    }
+  };
 
-  const handleSubmit = async () => {
-    if (!stripe || !elements || !clientSecret) return;
-
+  // Handle Express Checkout (Apple Pay, Google Pay, Link)
+  const handleExpressCheckout = async () => {
+    if (!stripe || !elements) return;
     setLoading(true);
 
     try {
-      // First submit the payment element to validate
       const { error: submitError } = await elements.submit();
       if (submitError) {
         onError(submitError.message || 'Validation failed');
@@ -90,7 +124,47 @@ export default function PayButton({
         return;
       }
 
-      // Then confirm the payment with the clientSecret
+      const secret = await createIntentOnDemand();
+      if (!secret) {
+        setLoading(false);
+        return;
+      }
+
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        clientSecret: secret,
+        confirmParams: {
+          return_url: window.location.href,
+        },
+        redirect: 'if_required',
+      });
+
+      if (error) {
+        onError(error.message || 'Payment failed');
+      } else if (paymentIntent?.status === 'succeeded') {
+        onSuccess();
+      }
+    } catch (err: any) {
+      onError(err.message || 'Payment failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle card payment
+  const handleSubmit = async () => {
+    if (!stripe || !elements || !clientSecret) return;
+
+    setLoading(true);
+
+    try {
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        onError(submitError.message || 'Validation failed');
+        setLoading(false);
+        return;
+      }
+
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         clientSecret,
@@ -140,7 +214,37 @@ export default function PayButton({
       transition={{ delay: 0.2 }}
       style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
     >
-      {/* Payment Form with Apple Pay / Google Pay / Link / Card */}
+      {/* Express Checkout: Apple Pay, Google Pay, Link */}
+      <div style={{
+        padding: '16px',
+        borderRadius: '16px',
+        background: '#1a1a2e',
+        border: '1px solid #2a2a3e',
+      }}>
+        <ExpressCheckoutElement
+          onConfirm={handleExpressCheckout}
+          options={{
+            wallets: {
+              applePay: 'auto',
+              googlePay: 'auto',
+            },
+          }}
+        />
+      </div>
+
+      {/* Divider */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '0 8px',
+      }}>
+        <div style={{ flex: 1, height: '1px', background: '#CBD5E1' }} />
+        <span style={{ fontSize: '13px', color: '#94A3B8', fontWeight: 500 }}>Or pay with card</span>
+        <div style={{ flex: 1, height: '1px', background: '#CBD5E1' }} />
+      </div>
+
+      {/* Card Payment Form */}
       {clientSecret && (
         <>
           <div style={{
@@ -151,12 +255,10 @@ export default function PayButton({
           }}>
             <PaymentElement
               options={{
-                layout: 'tabs',
                 wallets: {
-                  applePay: 'auto',
-                  googlePay: 'auto',
+                  applePay: 'never',
+                  googlePay: 'never',
                 },
-                paymentMethodOrder: ['apple_pay', 'google_pay', 'link', 'card'],
               }}
             />
           </div>
