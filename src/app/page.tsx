@@ -375,17 +375,30 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer style={{ borderTop: '1px solid var(--border-light)', padding: '2rem 0' }}>
-        <div style={{ maxWidth: '56rem', marginLeft: 'auto', marginRight: 'auto', padding: '0 1rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-            <div style={{ width: '2rem', height: '2rem', borderRadius: '0.5rem', backgroundColor: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Zap size={16} color="white" />
+      <footer style={{ borderTop: '1px solid var(--border-light)', padding: '3rem 0 2rem' }}>
+        <div style={{ maxWidth: '56rem', marginLeft: 'auto', marginRight: 'auto', padding: '0 1rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
+            {/* Logo */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{ width: '2rem', height: '2rem', borderRadius: '0.5rem', backgroundColor: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Zap size={16} color="white" />
+              </div>
+              <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>ZapSplit</span>
             </div>
-            <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>ZapSplit</span>
+
+            {/* Links */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', fontSize: '0.875rem' }}>
+              <a href="/support" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-primary)')} onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}>Support</a>
+              <a href="/privacy" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-primary)')} onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}>Privacy</a>
+              <a href="/terms" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-primary)')} onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}>Terms</a>
+              <a href="mailto:zapsplit@gmail.com" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-primary)')} onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}>Contact</a>
+            </div>
+
+            {/* Copyright */}
+            <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
+              &copy; {new Date().getFullYear()} ZapSplit. Made in Perth, Australia.
+            </p>
           </div>
-          <p style={{ fontSize: '0.875rem' }}>
-            Made with care in Australia
-          </p>
         </div>
       </footer>
     </div>

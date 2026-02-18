@@ -1,204 +1,231 @@
-import type { Metadata } from "next";
+'use client';
 
-export const metadata: Metadata = {
-  title: "Privacy Policy - ZapSplit",
-  description: "ZapSplit Privacy Policy. Learn how we collect, use, and protect your personal information.",
-};
+import { Zap, ArrowLeft, Shield, Mail, MapPin } from 'lucide-react';
 
-const CONTACT_EMAIL = "zapsplit@gmail.com";
-const EFFECTIVE_DATE = "18 February 2026";
+const CONTACT_EMAIL = 'zapsplit@gmail.com';
+const EFFECTIVE_DATE = '18 February 2026';
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="min-h-screen bg-white dark:bg-gray-950">
-      <div className="mx-auto max-w-3xl px-6 py-12">
-        {/* Header */}
-        <div className="mb-10">
-          <a href="/" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
-            &larr; Back to ZapSplit
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+      {/* Header */}
+      <header className="glass" style={{ borderBottom: '1px solid var(--border-light)' }}>
+        <div style={{ maxWidth: '56rem', marginLeft: 'auto', marginRight: 'auto', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.75rem', backgroundColor: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Zap size={22} color="white" />
+            </div>
+            <span style={{ fontWeight: 'bold', fontSize: '1.25rem', color: 'var(--text-primary)' }}>ZapSplit</span>
+          </div>
+          <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.875rem', fontWeight: '500' }}>
+            <ArrowLeft size={16} />
+            Back
           </a>
-          <h1 className="mt-4 text-3xl font-bold text-gray-900 dark:text-white">
+        </div>
+      </header>
+
+      <main style={{ maxWidth: '48rem', marginLeft: 'auto', marginRight: 'auto', padding: '3rem 1.5rem 4rem' }}>
+        {/* Title Section */}
+        <div style={{ marginBottom: '3rem' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.375rem 0.875rem', borderRadius: '9999px', backgroundColor: 'rgba(59, 130, 246, 0.1)', color: 'var(--primary)', fontSize: '0.8125rem', fontWeight: '600', marginBottom: '1.25rem' }}>
+            <Shield size={14} />
+            Your Privacy Matters
+          </div>
+          <h1 style={{ fontSize: '2.25rem', fontWeight: '800', color: 'var(--text-primary)', letterSpacing: '-0.025em', marginBottom: '0.75rem' }}>
             Privacy Policy
           </h1>
-          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-            Effective Date: {EFFECTIVE_DATE}
+          <p style={{ fontSize: '0.9375rem', color: 'var(--text-muted)' }}>
+            Effective {EFFECTIVE_DATE}
           </p>
         </div>
 
-        <div className="prose prose-gray dark:prose-invert max-w-none">
-          <p>
-            ZapSplit (&ldquo;we&rdquo;, &ldquo;us&rdquo;, or &ldquo;our&rdquo;) operates the ZapSplit mobile
-            application and website (collectively, the &ldquo;Service&rdquo;). This Privacy Policy explains how we
-            collect, use, disclose, and protect your personal information when you use our Service, in accordance
-            with the Australian Privacy Act 1988 (Cth) and the Australian Privacy Principles (APPs).
-          </p>
-          <p>
-            By using ZapSplit, you agree to the collection and use of information as described in this policy.
-          </p>
+        {/* Content */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          <Paragraph>
+            ZapSplit (&ldquo;we&rdquo;, &ldquo;us&rdquo;, or &ldquo;our&rdquo;) operates the ZapSplit mobile application and website (collectively, the &ldquo;Service&rdquo;). This Privacy Policy explains how we collect, use, disclose, and protect your personal information in accordance with the Australian Privacy Act 1988 (Cth) and the Australian Privacy Principles (APPs).
+          </Paragraph>
 
-          <h2>1. Information We Collect</h2>
+          <Section title="1. Information We Collect">
+            <SubTitle>Information you provide:</SubTitle>
+            <BulletList items={[
+              { bold: 'Account information', text: 'your name, email address, and profile photo.' },
+              { bold: 'Authentication data', text: 'credentials from Apple or Google sign-in. We only receive your name and email.' },
+              { bold: 'Payment information', text: 'card details processed directly by Stripe. Never stored on our servers.' },
+              { bold: 'Receipt images', text: 'photos of receipts uploaded for bill splitting and item extraction.' },
+              { bold: 'Split data', text: 'details of splits including amounts, participants, and payment status.' },
+              { bold: 'Contact info of others', text: 'names and optionally email or phone of people added to splits.' },
+            ]} />
+            <SubTitle>Collected automatically:</SubTitle>
+            <BulletList items={[
+              { bold: 'Device information', text: 'device model, OS version, and unique identifiers.' },
+              { bold: 'Usage data', text: 'features used and actions taken within the Service.' },
+              { bold: 'Log data', text: 'IP address, access times, and referring URLs.' },
+            ]} />
+          </Section>
 
-          <h3>Information you provide to us:</h3>
-          <ul>
-            <li><strong>Account information</strong> &mdash; your name, email address, and profile photo when you create an account.</li>
-            <li><strong>Authentication data</strong> &mdash; credentials from third-party sign-in providers (Apple, Google) if you choose to sign in with those services. We receive only your name and email; we never see your password.</li>
-            <li><strong>Payment information</strong> &mdash; payment card details and billing information. This is collected and processed directly by Stripe and is never stored on our servers.</li>
-            <li><strong>Receipt images</strong> &mdash; photos of receipts you upload for bill splitting. These are processed to extract item and pricing information.</li>
-            <li><strong>Split and transaction data</strong> &mdash; details of splits you create, including amounts, participants, and payment status.</li>
-            <li><strong>Contact information of others</strong> &mdash; names and optionally email or phone numbers of people you add to splits who may not have a ZapSplit account.</li>
-          </ul>
+          <Section title="2. How We Use Your Information">
+            <BulletList items={[
+              { text: 'Provide, operate, and maintain the Service.' },
+              { text: 'Process payments and facilitate bill splitting.' },
+              { text: 'Analyse receipt images using AI-powered OCR.' },
+              { text: 'Send notifications about payment requests and settlements.' },
+              { text: 'Generate shareable payment links for participants.' },
+              { text: 'Detect, prevent, and address fraud or technical issues.' },
+              { text: 'Comply with legal obligations.' },
+            ]} />
+          </Section>
 
-          <h3>Information collected automatically:</h3>
-          <ul>
-            <li><strong>Device information</strong> &mdash; device model, operating system version, and unique device identifiers.</li>
-            <li><strong>Usage data</strong> &mdash; how you interact with the Service, including features used and actions taken.</li>
-            <li><strong>Log data</strong> &mdash; IP address, access times, and referring URLs when you use our web payment pages.</li>
-          </ul>
+          <Section title="3. Third-Party Services">
+            <ThirdPartyCard name="Stripe" purpose="Payment Processing" description="Processes all payment transactions. Card details are collected directly by Stripe." url="https://stripe.com/au/privacy" />
+            <ThirdPartyCard name="Supabase" purpose="Infrastructure" description="Hosts our database and handles authentication. Data encrypted in transit and at rest." url="https://supabase.com/privacy" />
+            <ThirdPartyCard name="OpenAI" purpose="Receipt Scanning" description="Analyses receipt images to extract items and prices. Does not use your data for training." url="https://openai.com/policies/privacy-policy" />
+            <ThirdPartyCard name="Apple / Google" purpose="Authentication" description="Provides sign-in services. We receive only your name and email, never your password." />
+            <ThirdPartyCard name="Expo" purpose="App Delivery" description="Delivers app updates and handles push notifications for payment activity." />
+          </Section>
 
-          <h2>2. How We Use Your Information</h2>
-          <p>We use your information to:</p>
-          <ul>
-            <li>Provide, operate, and maintain the Service</li>
-            <li>Process payments and facilitate bill splitting between users</li>
-            <li>Analyse receipt images using AI-powered optical character recognition</li>
-            <li>Send you notifications about payment requests, settlements, and account activity</li>
-            <li>Generate shareable payment links for split participants</li>
-            <li>Detect, prevent, and address fraud or technical issues</li>
-            <li>Comply with legal obligations</li>
-          </ul>
+          <Section title="4. Data Storage & Security">
+            <Paragraph>
+              Your data is stored on secure servers provided by Supabase (hosted on AWS). We implement industry-standard security measures:
+            </Paragraph>
+            <BulletList items={[
+              { text: 'Encryption in transit (TLS/SSL) and at rest.' },
+              { text: 'Row Level Security (RLS) on all database tables.' },
+              { text: 'Secure authentication with hashed passwords.' },
+              { text: 'Payment data handled exclusively by PCI-compliant Stripe.' },
+            ]} />
+          </Section>
 
-          <h2>3. Third-Party Service Providers</h2>
-          <p>
-            We share your information with the following third-party service providers who assist us in
-            operating the Service:
-          </p>
+          <Section title="5. Data Retention">
+            <Paragraph>
+              We retain your information while your account is active. Upon deletion, data is removed within 30 days, except where required for legal or regulatory purposes. Transaction records may be kept up to 7 years for financial compliance.
+            </Paragraph>
+          </Section>
 
-          <h3>Stripe &mdash; Payment processing</h3>
-          <p>
-            Processes all payment transactions. Your payment card details are collected directly by Stripe
-            and are subject to{" "}
-            <a href="https://stripe.com/au/privacy" target="_blank" rel="noopener noreferrer">
-              Stripe&apos;s Privacy Policy
-            </a>
-            . We do not store your full card number.
-          </p>
+          <Section title="6. Your Rights">
+            <Paragraph>Under the Australian Privacy Act 1988, you have the right to:</Paragraph>
+            <BulletList items={[
+              { bold: 'Access', text: 'request a copy of your personal information.' },
+              { bold: 'Correction', text: 'request correction of inaccurate data.' },
+              { bold: 'Deletion', text: 'request deletion of your account and data.' },
+              { bold: 'Withdraw consent', text: 'withdraw consent for data processing at any time.' },
+              { bold: 'Complain', text: 'lodge a complaint with the OAIC.' },
+            ]} />
+          </Section>
 
-          <h3>Supabase &mdash; Backend infrastructure and authentication</h3>
-          <p>
-            Hosts our database, handles user authentication, and stores your account data. Data is encrypted
-            in transit and at rest. See{" "}
-            <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer">
-              Supabase&apos;s Privacy Policy
-            </a>
-            .
-          </p>
+          <Section title="7. Children's Privacy">
+            <Paragraph>
+              ZapSplit is not intended for anyone under 18. We do not knowingly collect data from children.
+            </Paragraph>
+          </Section>
 
-          <h3>OpenAI &mdash; Receipt scanning (OCR)</h3>
-          <p>
-            Analyses receipt images you upload to extract item names and prices. Images are sent to
-            OpenAI&apos;s API for processing. OpenAI does not use this data to train their models. See{" "}
-            <a href="https://openai.com/policies/privacy-policy" target="_blank" rel="noopener noreferrer">
-              OpenAI&apos;s Privacy Policy
-            </a>
-            .
-          </p>
+          <Section title="8. International Transfers">
+            <Paragraph>
+              Your data may be transferred to countries outside Australia, including the United States, where our providers operate. By using the Service, you consent to these transfers.
+            </Paragraph>
+          </Section>
 
-          <h3>Apple / Google &mdash; Authentication</h3>
-          <p>
-            If you sign in with Apple or Google, we receive your name and email from these providers.
-            We do not receive or store your Apple or Google password.
-          </p>
+          <Section title="9. Changes to This Policy">
+            <Paragraph>
+              We may update this policy from time to time. Material changes will be communicated by updating the effective date and, where appropriate, via in-app notification.
+            </Paragraph>
+          </Section>
 
-          <h3>Expo / EAS &mdash; App delivery and push notifications</h3>
-          <p>
-            Used to deliver app updates and send push notifications about payment activity.
-          </p>
+          <Section title="10. Contact Us">
+            <Paragraph>
+              Questions, concerns, or requests? Get in touch.
+            </Paragraph>
+            <ContactCard email={CONTACT_EMAIL} />
+          </Section>
 
-          <h2>4. Data Storage and Security</h2>
-          <p>
-            Your data is stored on secure servers provided by Supabase (hosted on Amazon Web Services).
-            While our servers may be located outside Australia, we take reasonable steps to ensure your
-            data is treated securely and in accordance with this policy.
-          </p>
-          <p>We implement industry-standard security measures including:</p>
-          <ul>
-            <li>Encryption of data in transit (TLS/SSL) and at rest</li>
-            <li>Row Level Security (RLS) policies on all database tables</li>
-            <li>Secure authentication with hashed passwords</li>
-            <li>Payment data handled exclusively by PCI-compliant Stripe</li>
-          </ul>
-          <p>
-            No method of electronic storage is 100% secure. While we strive to use commercially acceptable
-            means to protect your personal information, we cannot guarantee its absolute security.
-          </p>
+          <div style={{ padding: '1.25rem', borderRadius: '0.75rem', backgroundColor: 'var(--surface)', border: '1px solid var(--border-light)', fontSize: '0.8125rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>
+            If you are not satisfied with our response, you may lodge a complaint with the Office of the Australian Information Commissioner (OAIC) at <a href="https://www.oaic.gov.au" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', textDecoration: 'none' }}>www.oaic.gov.au</a>.
+          </div>
+        </div>
+      </main>
 
-          <h2>5. Data Retention</h2>
-          <p>
-            We retain your personal information for as long as your account is active or as needed to
-            provide you the Service. If you delete your account, we will delete or anonymise your personal
-            data within 30 days, except where we are required to retain it for legal, tax, or regulatory purposes.
-          </p>
-          <p>
-            Receipt images are retained only for as long as the associated split is active. Transaction
-            records may be retained for up to 7 years for financial compliance purposes.
-          </p>
+      <Footer />
+    </div>
+  );
+}
 
-          <h2>6. Your Rights</h2>
-          <p>Under the Australian Privacy Act 1988, you have the right to:</p>
-          <ul>
-            <li><strong>Access</strong> &mdash; request a copy of the personal information we hold about you.</li>
-            <li><strong>Correction</strong> &mdash; request correction of any inaccurate or incomplete information.</li>
-            <li><strong>Deletion</strong> &mdash; request deletion of your account and associated data.</li>
-            <li><strong>Withdraw consent</strong> &mdash; withdraw your consent for data processing at any time.</li>
-            <li><strong>Complain</strong> &mdash; lodge a complaint with the Office of the Australian Information Commissioner (OAIC) if you believe your privacy has been breached.</li>
-          </ul>
-          <p>To exercise any of these rights, please contact us at the email address below.</p>
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <h2 style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '0.875rem', letterSpacing: '-0.01em' }}>{title}</h2>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>{children}</div>
+    </div>
+  );
+}
 
-          <h2>7. Children&apos;s Privacy</h2>
-          <p>
-            The Service is not intended for use by anyone under the age of 18. We do not knowingly collect
-            personal information from children under 18. If we become aware that we have collected personal
-            information from a child, we will take steps to delete it promptly.
-          </p>
+function SubTitle({ children }: { children: React.ReactNode }) {
+  return <p style={{ fontSize: '0.9375rem', fontWeight: '600', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>{children}</p>;
+}
 
-          <h2>8. International Data Transfers</h2>
-          <p>
-            Your information may be transferred to and processed in countries other than Australia, including
-            the United States, where our service providers operate. By using the Service, you consent to the
-            transfer of your information to these countries, which may have different data protection laws
-            than Australia.
-          </p>
+function Paragraph({ children }: { children: React.ReactNode }) {
+  return <p style={{ fontSize: '0.9375rem', lineHeight: '1.7', color: 'var(--text-secondary)' }}>{children}</p>;
+}
 
-          <h2>9. Changes to This Policy</h2>
-          <p>
-            We may update this Privacy Policy from time to time. We will notify you of material changes by
-            updating the &ldquo;Effective Date&rdquo; at the top of this policy and, where appropriate,
-            through an in-app notification. Your continued use of the Service after changes are posted
-            constitutes your acceptance of the updated policy.
-          </p>
+function BulletList({ items }: { items: { bold?: string; text: string }[] }) {
+  return (
+    <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      {items.map((item, i) => (
+        <li key={i} style={{ display: 'flex', gap: '0.75rem', fontSize: '0.9375rem', lineHeight: '1.6', color: 'var(--text-secondary)' }}>
+          <span style={{ color: 'var(--primary)', marginTop: '0.125rem', flexShrink: 0 }}>&bull;</span>
+          <span>{item.bold && <strong style={{ color: 'var(--text-primary)', fontWeight: '600' }}>{item.bold}</strong>} {item.text}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
-          <h2>10. Contact Us</h2>
-          <p>
-            If you have any questions about this Privacy Policy, wish to exercise your privacy rights,
-            or have a complaint, please contact us:
-          </p>
-          <ul>
-            <li>
-              Email:{" "}
-              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
-            </li>
-            <li>Location: Perth, Western Australia</li>
-          </ul>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-8">
-            If you are not satisfied with our response, you may lodge a complaint with the Office of the
-            Australian Information Commissioner (OAIC) at{" "}
-            <a href="https://www.oaic.gov.au" target="_blank" rel="noopener noreferrer">
-              www.oaic.gov.au
-            </a>
-            .
-          </p>
+function ThirdPartyCard({ name, purpose, description, url }: { name: string; purpose: string; description: string; url?: string }) {
+  return (
+    <div style={{ padding: '1rem 1.25rem', borderRadius: '0.75rem', backgroundColor: 'var(--surface)', border: '1px solid var(--border-light)', marginBottom: '0.25rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.375rem' }}>
+        <span style={{ fontWeight: '600', color: 'var(--text-primary)', fontSize: '0.9375rem' }}>{name}</span>
+        <span style={{ fontSize: '0.75rem', fontWeight: '600', color: 'var(--primary)', backgroundColor: 'rgba(59, 130, 246, 0.1)', padding: '0.2rem 0.6rem', borderRadius: '9999px' }}>{purpose}</span>
+      </div>
+      <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>{description}</p>
+      {url && (
+        <a href={url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.8125rem', color: 'var(--primary)', textDecoration: 'none', fontWeight: '500', marginTop: '0.5rem', display: 'inline-block' }}>
+          View their privacy policy &rarr;
+        </a>
+      )}
+    </div>
+  );
+}
+
+function ContactCard({ email }: { email: string }) {
+  return (
+    <div style={{ padding: '1.25rem', borderRadius: '0.75rem', backgroundColor: 'var(--surface)', border: '1px solid var(--border-light)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <Mail size={18} style={{ color: 'var(--primary)' }} />
+        <a href={`mailto:${email}`} style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: '500', fontSize: '0.9375rem' }}>{email}</a>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <MapPin size={18} style={{ color: 'var(--text-muted)' }} />
+        <span style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem' }}>Perth, Western Australia</span>
+      </div>
+    </div>
+  );
+}
+
+function Footer() {
+  return (
+    <footer style={{ borderTop: '1px solid var(--border-light)', padding: '2rem 0' }}>
+      <div style={{ maxWidth: '56rem', marginLeft: 'auto', marginRight: 'auto', padding: '0 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ width: '1.5rem', height: '1.5rem', borderRadius: '0.375rem', backgroundColor: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Zap size={12} color="white" />
+          </div>
+          <span>&copy; {new Date().getFullYear()} ZapSplit</span>
+        </div>
+        <div style={{ display: 'flex', gap: '1.5rem' }}>
+          <a href="/privacy" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Privacy</a>
+          <a href="/terms" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Terms</a>
+          <a href="/support" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Support</a>
         </div>
       </div>
-    </main>
+    </footer>
   );
 }
