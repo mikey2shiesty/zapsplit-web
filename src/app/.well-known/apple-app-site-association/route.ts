@@ -6,7 +6,7 @@ export async function GET() {
       apps: [],
       details: [
         {
-          appID: '48TQ9H988B.com.yourname.zapsplit',
+          appID: '48TQ9H988B.com.zapsplit.app',
           paths: ['/pay/*'],
         },
       ],
