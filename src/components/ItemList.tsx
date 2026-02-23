@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Users, Lock, Plus, Minus } from 'lucide-react';
+import { Check, Users, Minus, Plus } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 
 interface Item {
@@ -37,10 +37,9 @@ export default function ItemList({
   onToggleShared,
   onQuantityChange,
   claimInfo = new Map(),
-  currentUserEmail = '',
 }: ItemListProps) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
       {items.map((item, index) => {
         const isSelected = selectedItems.has(index);
         const isShared = sharedItems.has(index);
@@ -49,23 +48,21 @@ export default function ItemList({
         const claimers = claim.names;
         const totalQtyClaimed = Number(claim.totalQtyClaimed) || 0;
 
-        // Calculate remaining quantity - ensure numeric comparison
         const itemQty = Number(item.quantity) || 1;
         const qtyRemaining = Math.max(0, itemQty - totalQtyClaimed);
         const selectedQty = selectedQuantities.get(index) || 1;
         const unitPrice = Number(item.unit_price) || (Number(item.price) / itemQty);
         const itemPrice = isShared ? (unitPrice * selectedQty) / shareCount : unitPrice * selectedQty;
 
-        // Item is fully claimed if no quantity remaining
         const isFullyClaimed = qtyRemaining === 0;
         const isDisabled = isFullyClaimed;
 
         return (
           <motion.div
             key={index}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.03 }}
+            transition={{ delay: index * 0.02 }}
           >
             <div
               onClick={() => !isDisabled && onToggleItem(index)}
@@ -73,87 +70,71 @@ export default function ItemList({
                 position: 'relative',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '16px',
-                padding: '18px 20px',
-                borderRadius: '20px',
+                gap: '14px',
+                padding: '14px 16px',
+                borderRadius: '12px',
                 cursor: isDisabled ? 'not-allowed' : 'pointer',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                transition: 'all 0.15s ease',
                 border: isDisabled
-                  ? '2px solid #E2E8F0'
+                  ? '1px solid #E5E7EB'
                   : isSelected
-                    ? '2px solid #3B82F6'
-                    : '2px solid transparent',
-                background: isDisabled
-                  ? 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)'
-                  : isSelected
-                    ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(37, 99, 235, 0.04) 100%)'
-                    : '#FFFFFF',
-                boxShadow: isDisabled
-                  ? 'none'
-                  : isSelected
-                    ? '0 8px 24px rgba(59, 130, 246, 0.15)'
-                    : '0 2px 12px rgba(0, 0, 0, 0.04)',
-                opacity: isDisabled ? 0.7 : 1,
+                    ? '1.5px solid #0F172A'
+                    : '1px solid #E5E7EB',
+                background: '#FFFFFF',
+                boxShadow: isSelected
+                  ? '0 1px 3px rgba(0,0,0,0.08)'
+                  : '0 1px 3px rgba(0,0,0,0.04)',
+                opacity: isDisabled ? 0.6 : 1,
               }}
             >
-              {/* Premium Checkbox */}
+              {/* Checkbox */}
               <div
                 style={{
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '10px',
+                  width: '22px',
+                  height: '22px',
+                  borderRadius: '6px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transition: 'all 0.15s ease',
                   background: isDisabled
-                    ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
+                    ? '#D1D5DB'
                     : isSelected
-                      ? 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)'
-                      : 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)',
-                  boxShadow: isDisabled
-                    ? '0 2px 8px rgba(16, 185, 129, 0.2)'
+                      ? '#0F172A'
+                      : '#FFFFFF',
+                  border: isDisabled
+                    ? 'none'
                     : isSelected
-                      ? '0 4px 12px rgba(59, 130, 246, 0.3)'
-                      : '0 1px 3px rgba(0, 0, 0, 0.04)',
+                      ? 'none'
+                      : '1.5px solid #D1D5DB',
                 }}
               >
                 <AnimatePresence mode="wait">
-                  {isDisabled ? (
+                  {(isDisabled || isSelected) && (
                     <motion.div
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0, opacity: 0 }}
-                      transition={{ duration: 0.2, type: 'spring', stiffness: 500 }}
+                      transition={{ duration: 0.15 }}
                     >
-                      <Lock size={14} color="white" strokeWidth={2.5} />
+                      <Check size={13} color="white" strokeWidth={3} />
                     </motion.div>
-                  ) : isSelected ? (
-                    <motion.div
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{ duration: 0.2, type: 'spring', stiffness: 500 }}
-                    >
-                      <Check size={16} color="white" strokeWidth={3} />
-                    </motion.div>
-                  ) : null}
+                  )}
                 </AnimatePresence>
               </div>
 
               {/* Item Details */}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span
                     style={{
-                      fontWeight: 600,
-                      fontSize: '15px',
-                      color: isDisabled ? '#94A3B8' : isSelected ? '#1E40AF' : '#0F172A',
+                      fontWeight: 500,
+                      fontSize: '14px',
+                      color: isDisabled ? '#9CA3AF' : '#0F172A',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
-                      transition: 'color 0.2s ease',
                       textDecoration: isDisabled ? 'line-through' : 'none',
                     }}
                   >
@@ -162,51 +143,38 @@ export default function ItemList({
                   {itemQty > 1 && (
                     <span style={{
                       fontSize: '12px',
-                      fontWeight: 600,
-                      color: isDisabled ? '#CBD5E1' : '#64748B',
-                      background: 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)',
-                      padding: '4px 10px',
-                      borderRadius: '8px',
+                      fontWeight: 500,
+                      color: '#9CA3AF',
+                      background: '#F3F4F6',
+                      padding: '2px 8px',
+                      borderRadius: '4px',
                     }}>
                       x{itemQty}
                     </span>
                   )}
                 </div>
 
-                {/* Claimed by indicator */}
+                {/* Claimed indicator — plain text */}
                 {claimers.length > 0 && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
-                    <div style={{
-                      width: '16px',
-                      height: '16px',
-                      borderRadius: '50%',
-                      background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                      <Users size={8} color="white" />
-                    </div>
-                    <span style={{ fontSize: '12px', color: isDisabled ? '#10B981' : '#64748B', fontWeight: 500 }}>
-                      {itemQty > 1
-                        ? `${totalQtyClaimed} of ${itemQty} claimed`
-                        : claimers.length === 1
-                          ? `${claimers[0]} claimed this`
-                          : `${claimers.length} people claimed`}
-                    </span>
-                  </div>
+                  <span style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '4px', display: 'block' }}>
+                    {itemQty > 1
+                      ? `${totalQtyClaimed} of ${itemQty} claimed`
+                      : claimers.length === 1
+                        ? `${claimers[0]} claimed this`
+                        : `${claimers.length} people claimed`}
+                  </span>
                 )}
 
-                {/* Quantity selector for items with multiple quantities */}
+                {/* Quantity selector */}
                 {isSelected && !isDisabled && itemQty > 1 && qtyRemaining > 0 && (
                   <div style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '6px',
+                    gap: '8px',
                     marginTop: '8px',
-                    background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)',
-                    padding: '6px 10px',
-                    borderRadius: '10px',
+                    background: '#F3F4F6',
+                    padding: '4px 8px',
+                    borderRadius: '6px',
                   }}>
                     <button
                       onClick={(e) => {
@@ -215,28 +183,25 @@ export default function ItemList({
                       }}
                       disabled={selectedQty <= 1}
                       style={{
-                        width: '26px',
-                        height: '26px',
-                        borderRadius: '8px',
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '6px',
                         border: 'none',
-                        background: selectedQty <= 1
-                          ? '#E2E8F0'
-                          : 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
-                        color: selectedQty <= 1 ? '#94A3B8' : 'white',
+                        background: selectedQty <= 1 ? '#E5E7EB' : '#D1D5DB',
+                        color: selectedQty <= 1 ? '#9CA3AF' : '#374151',
                         cursor: selectedQty <= 1 ? 'not-allowed' : 'pointer',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: selectedQty <= 1 ? 'none' : '0 2px 8px rgba(59, 130, 246, 0.3)',
                       }}
                     >
                       <Minus size={12} />
                     </button>
                     <span style={{
-                      minWidth: '20px',
+                      minWidth: '18px',
                       textAlign: 'center',
-                      fontWeight: 700,
-                      fontSize: '14px',
+                      fontWeight: 600,
+                      fontSize: '13px',
                       color: '#0F172A',
                     }}>
                       {selectedQty}
@@ -248,24 +213,21 @@ export default function ItemList({
                       }}
                       disabled={selectedQty >= qtyRemaining}
                       style={{
-                        width: '26px',
-                        height: '26px',
-                        borderRadius: '8px',
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '6px',
                         border: 'none',
-                        background: selectedQty >= qtyRemaining
-                          ? '#E2E8F0'
-                          : 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
-                        color: selectedQty >= qtyRemaining ? '#94A3B8' : 'white',
+                        background: selectedQty >= qtyRemaining ? '#E5E7EB' : '#D1D5DB',
+                        color: selectedQty >= qtyRemaining ? '#9CA3AF' : '#374151',
                         cursor: selectedQty >= qtyRemaining ? 'not-allowed' : 'pointer',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        boxShadow: selectedQty >= qtyRemaining ? 'none' : '0 2px 8px rgba(59, 130, 246, 0.3)',
                       }}
                     >
                       <Plus size={12} />
                     </button>
-                    <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 500, marginLeft: '2px' }}>
+                    <span style={{ fontSize: '11px', color: '#9CA3AF', fontWeight: 500, marginLeft: '2px' }}>
                       /{qtyRemaining}
                     </span>
                   </div>
@@ -276,11 +238,10 @@ export default function ItemList({
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
                 <span
                   style={{
-                    fontWeight: 700,
-                    fontSize: '16px',
+                    fontWeight: 600,
+                    fontSize: '14px',
                     fontVariantNumeric: 'tabular-nums',
-                    color: isDisabled ? '#94A3B8' : isSelected ? '#2563EB' : '#0F172A',
-                    transition: 'color 0.2s ease',
+                    color: isDisabled ? '#9CA3AF' : '#0F172A',
                     textDecoration: isDisabled ? 'line-through' : 'none',
                   }}
                 >
@@ -289,23 +250,17 @@ export default function ItemList({
                 {isShared && !isDisabled && (
                   <span style={{
                     fontSize: '11px',
-                    fontWeight: 600,
-                    color: '#10B981',
-                    background: 'rgba(16, 185, 129, 0.1)',
-                    padding: '2px 8px',
-                    borderRadius: '6px',
+                    fontWeight: 500,
+                    color: '#64748B',
                   }}>
-                    ÷{shareCount} split
+                    /{shareCount} split
                   </span>
                 )}
                 {isDisabled && (
                   <span style={{
                     fontSize: '11px',
-                    fontWeight: 600,
-                    color: '#10B981',
-                    background: 'rgba(16, 185, 129, 0.1)',
-                    padding: '2px 8px',
-                    borderRadius: '6px',
+                    fontWeight: 500,
+                    color: '#9CA3AF',
                   }}>
                     Claimed
                   </span>
@@ -323,25 +278,22 @@ export default function ItemList({
                   }}
                   style={{
                     position: 'absolute',
-                    right: '-10px',
-                    top: '-10px',
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '12px',
+                    right: '-8px',
+                    top: '-8px',
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '8px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                    border: 'none',
-                    background: isShared
-                      ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
-                      : '#FFFFFF',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+                    border: isShared ? 'none' : '1px solid #E5E7EB',
+                    background: isShared ? '#0F172A' : '#FFFFFF',
                     color: isShared ? 'white' : '#64748B',
                     cursor: 'pointer',
-                    transition: 'all 0.2s ease',
                   }}
                 >
-                  <Users size={16} />
+                  <Users size={13} />
                 </motion.button>
               )}
             </div>

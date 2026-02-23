@@ -1,7 +1,6 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Receipt, CreditCard, Sparkles } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 
 interface PaymentSummaryProps {
@@ -24,93 +23,37 @@ export default function PaymentSummary({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       style={{
-        borderRadius: '28px',
-        padding: '28px',
-        background: hasSelection
-          ? 'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)'
-          : '#FFFFFF',
-        border: hasSelection ? '2px solid #E2E8F0' : '2px solid #F1F5F9',
-        boxShadow: hasSelection
-          ? '0 12px 40px rgba(59, 130, 246, 0.08), 0 4px 12px rgba(0, 0, 0, 0.03)'
-          : '0 4px 24px rgba(0, 0, 0, 0.03)',
-        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+        borderRadius: '12px',
+        padding: '20px',
+        background: '#FFFFFF',
+        border: '1px solid #E5E7EB',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
       }}
     >
-      {/* Header */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '14px',
-        paddingBottom: '20px',
-        borderBottom: '1px solid #F1F5F9',
-        marginBottom: '20px',
-      }}>
-        <div style={{
-          width: '48px',
-          height: '48px',
-          borderRadius: '16px',
-          background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 4px 12px rgba(59, 130, 246, 0.25)',
-        }}>
-          <Sparkles size={22} color="white" />
-        </div>
-        <div>
-          <span style={{
-            fontWeight: 700,
-            fontSize: '18px',
-            color: '#0F172A',
-            letterSpacing: '-0.3px',
-          }}>
-            Your Summary
-          </span>
-          <p style={{ fontSize: '13px', color: '#94A3B8', marginTop: '2px' }}>
-            Breakdown of your share
-          </p>
-        </div>
-      </div>
-
       {/* Line Items */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
         {/* Items Total */}
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '14px 16px',
-          borderRadius: '14px',
-          background: '#F8FAFC',
+          padding: '12px 0',
+          borderBottom: '1px solid #F3F4F6',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '10px',
-              background: '#FFFFFF',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)',
-            }}>
-              <Receipt size={16} color="#64748B" />
-            </div>
-            <span style={{ color: '#475569', fontSize: '15px', fontWeight: 500 }}>
-              Items ({selectedCount})
-            </span>
-          </div>
+          <span style={{ color: '#64748B', fontSize: '14px', fontWeight: 400 }}>
+            Items ({selectedCount})
+          </span>
           <AnimatePresence mode="wait">
             <motion.span
               key={itemsTotal}
-              initial={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
+              exit={{ opacity: 0, y: 8 }}
               style={{
-                fontWeight: 600,
+                fontWeight: 500,
                 fontVariantNumeric: 'tabular-nums',
                 color: '#0F172A',
-                fontSize: '15px',
+                fontSize: '14px',
               }}
             >
               {formatCurrency(itemsTotal)}
@@ -127,31 +70,18 @@ export default function PaymentSummary({
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              padding: '14px 16px',
-              borderRadius: '14px',
-              background: '#F8FAFC',
+              padding: '12px 0',
+              borderBottom: '1px solid #F3F4F6',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '10px',
-                background: '#FFFFFF',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)',
-              }}>
-                <CreditCard size={16} color="#64748B" />
-              </div>
-              <span style={{ color: '#475569', fontSize: '15px', fontWeight: 500 }}>Service Fee</span>
-            </div>
+            <span style={{ color: '#64748B', fontSize: '14px', fontWeight: 400 }}>
+              Service fee
+            </span>
             <span style={{
-              fontWeight: 600,
+              fontWeight: 500,
               fontVariantNumeric: 'tabular-nums',
               color: '#0F172A',
-              fontSize: '15px',
+              fontSize: '14px',
             }}>
               {formatCurrency(serviceFee)}
             </span>
@@ -159,70 +89,59 @@ export default function PaymentSummary({
         )}
       </div>
 
-      {/* Total Section */}
+      {/* Total */}
       <div style={{
-        marginTop: '24px',
-        padding: '24px',
-        borderRadius: '20px',
-        background: hasSelection
-          ? 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)'
-          : 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)',
-        boxShadow: hasSelection
-          ? '0 8px 24px rgba(59, 130, 246, 0.3)'
-          : 'none',
-        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingTop: '16px',
+        borderTop: hasSelection ? '2px solid #0F172A' : '2px solid #E5E7EB',
+        marginTop: '0',
       }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+        <span style={{
+          fontSize: '15px',
+          fontWeight: 600,
+          color: '#0F172A',
         }}>
-          <span style={{
-            fontSize: '16px',
-            fontWeight: 600,
-            color: hasSelection ? 'rgba(255, 255, 255, 0.9)' : '#64748B',
-          }}>
-            Your Total
-          </span>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={total}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-              style={{
-                fontSize: '32px',
-                fontWeight: 800,
-                fontVariantNumeric: 'tabular-nums',
-                color: hasSelection ? '#FFFFFF' : '#94A3B8',
-                letterSpacing: '-1px',
-              }}
-            >
-              {formatCurrency(total)}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* No selection hint */}
-        <AnimatePresence>
-          {!hasSelection && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              style={{
-                marginTop: '12px',
-                fontSize: '14px',
-                color: '#94A3B8',
-                textAlign: 'center',
-              }}
-            >
-              Select items above to see your total
-            </motion.p>
-          )}
+          Total
+        </span>
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={total}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            style={{
+              fontSize: '22px',
+              fontWeight: 700,
+              fontVariantNumeric: 'tabular-nums',
+              color: hasSelection ? '#0F172A' : '#94A3B8',
+              letterSpacing: '-0.5px',
+            }}
+          >
+            {formatCurrency(total)}
+          </motion.span>
         </AnimatePresence>
       </div>
+
+      {/* No selection hint */}
+      <AnimatePresence>
+        {!hasSelection && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              marginTop: '12px',
+              fontSize: '13px',
+              color: '#94A3B8',
+              textAlign: 'center',
+            }}
+          >
+            Select items above to see your total
+          </motion.p>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

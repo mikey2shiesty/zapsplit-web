@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Shield, X, Lock } from 'lucide-react';
+import { Loader2, X, Lock } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import {
   useStripe,
@@ -195,13 +195,13 @@ export default function PayButton({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         style={{
-          padding: '24px',
-          borderRadius: '24px',
-          background: 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)',
+          padding: '16px',
+          borderRadius: '10px',
+          background: '#F3F4F6',
           textAlign: 'center',
         }}
       >
-        <p style={{ color: '#64748B', fontWeight: 500 }}>
+        <p style={{ color: '#9CA3AF', fontSize: '14px', fontWeight: 500 }}>
           {!payerName || !payerEmail
             ? 'Enter your details above to pay'
             : 'Select items to pay'}
@@ -212,82 +212,42 @@ export default function PayButton({
 
   return (
     <>
-      {/* Trigger Button */}
+      {/* Trigger Button + fee info */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
+        style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
       >
         <motion.button
-          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setShowSheet(true)}
           style={{
             width: '100%',
-            padding: '18px',
-            borderRadius: '16px',
+            padding: '16px',
+            borderRadius: '10px',
             border: 'none',
-            background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+            background: '#0F172A',
             color: 'white',
-            fontSize: '17px',
-            fontWeight: 700,
+            fontSize: '16px',
+            fontWeight: 600,
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '10px',
-            boxShadow: '0 6px 20px rgba(59, 130, 246, 0.35)',
           }}
         >
-          <span>Pay {formatCurrency(totalAmount)}</span>
-          <Shield size={18} style={{ opacity: 0.8 }} />
+          Pay {formatCurrency(totalAmount)}
         </motion.button>
 
-        {/* Fee Breakdown */}
-        <div style={{
-          textAlign: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '6px',
-        }}>
-          <div style={{
-            fontSize: '14px',
-            color: '#64748B',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-          }}>
-            <span>{formatCurrency(amount)}</span>
-            <span style={{ color: '#CBD5E1' }}>+</span>
-            <span style={{
-              padding: '4px 10px',
-              borderRadius: '8px',
-              background: '#F1F5F9',
-              fontSize: '13px',
-              fontWeight: 500,
-            }}>
-              {formatCurrency(platformFee)} fee
-            </span>
-          </div>
-          <div style={{ fontSize: '14px', color: '#94A3B8' }}>
-            Paying <span style={{ fontWeight: 600, color: '#475569' }}>{recipientName}</span>
-          </div>
-        </div>
-
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px',
-          padding: '14px',
-          borderRadius: '12px',
-          background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)',
-        }}>
-          <Shield size={16} color="#10B981" />
-          <span style={{ fontSize: '13px', color: '#64748B', fontWeight: 500 }}>
-            Secure payment powered by Stripe
+        {/* Fee + Stripe line */}
+        <div style={{ textAlign: 'center' }}>
+          <span style={{ fontSize: '13px', color: '#9CA3AF' }}>
+            {formatCurrency(amount)} + {formatCurrency(platformFee)} fee
+          </span>
+          <span style={{ fontSize: '13px', color: '#D1D5DB', margin: '0 8px' }}>&middot;</span>
+          <span style={{ fontSize: '12px', color: '#9CA3AF' }}>
+            Secured by Stripe
           </span>
         </div>
       </motion.div>
@@ -305,7 +265,7 @@ export default function PayButton({
               style={{
                 position: 'fixed',
                 inset: 0,
-                background: 'rgba(0, 0, 0, 0.6)',
+                background: 'rgba(0, 0, 0, 0.5)',
                 zIndex: 9998,
               }}
             />
@@ -323,8 +283,8 @@ export default function PayButton({
                 right: 0,
                 zIndex: 9999,
                 background: '#1c1c2e',
-                borderTopLeftRadius: '20px',
-                borderTopRightRadius: '20px',
+                borderTopLeftRadius: '16px',
+                borderTopRightRadius: '16px',
                 maxHeight: '90vh',
                 overflowY: 'auto',
                 padding: '20px',
@@ -399,11 +359,11 @@ export default function PayButton({
                 style={{
                   width: '100%',
                   padding: '16px',
-                  borderRadius: '12px',
+                  borderRadius: '10px',
                   border: 'none',
-                  background: '#3B82F6',
+                  background: '#0F172A',
                   color: 'white',
-                  fontSize: '17px',
+                  fontSize: '16px',
                   fontWeight: 600,
                   cursor: loading ? 'not-allowed' : 'pointer',
                   display: 'flex',
@@ -418,7 +378,7 @@ export default function PayButton({
                 ) : (
                   <>
                     <span>Pay {formatCurrency(totalAmount)}</span>
-                    <Lock size={16} style={{ opacity: 0.7 }} />
+                    <Lock size={15} style={{ opacity: 0.5 }} />
                   </>
                 )}
               </button>
