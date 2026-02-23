@@ -478,7 +478,7 @@ export default function PaymentPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          style={{ paddingTop: '32px' }}
+          style={{ paddingTop: '32px', textAlign: 'center' }}
         >
           <h1 style={{
             fontSize: '24px',
