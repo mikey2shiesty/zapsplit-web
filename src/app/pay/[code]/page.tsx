@@ -466,9 +466,12 @@ export default function PaymentPage() {
         }}
       >
         <div style={{ maxWidth: '420px', margin: '0 auto', padding: '12px 20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-            <Image src="/logo.png" alt="ZapSplit" width={28} height={28} />
-            <span style={{ fontWeight: 700, fontSize: '17px', color: '#0F172A', letterSpacing: '-0.3px' }}>ZapSplit</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Image src="/logo.png" alt="ZapSplit" width={28} height={28} />
+              <span style={{ fontWeight: 700, fontSize: '17px', color: '#0F172A', letterSpacing: '-0.3px' }}>ZapSplit</span>
+            </div>
+            <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 500 }}>Secure checkout</span>
           </div>
         </div>
       </motion.header>
