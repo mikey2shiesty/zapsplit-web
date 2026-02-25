@@ -276,6 +276,7 @@ export default function PayButton({
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="pay-sheet"
               style={{
                 position: 'fixed',
                 bottom: 0,

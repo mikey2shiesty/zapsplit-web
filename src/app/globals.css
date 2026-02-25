@@ -138,6 +138,80 @@ body {
   box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
 }
 
+/* Responsive payment page layout */
+.pay-header-inner {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 12px 20px;
+}
+
+.pay-main {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
+}
+
+.pay-skeleton-inner {
+  max-width: 420px;
+  margin: 0 auto;
+  padding-top: 48px;
+}
+
+@media (min-width: 640px) {
+  .pay-header-inner {
+    max-width: 520px;
+    padding: 14px 28px;
+  }
+  .pay-main {
+    max-width: 520px;
+    padding: 0 28px 48px;
+  }
+  .pay-skeleton-inner {
+    max-width: 520px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .pay-header-inner {
+    max-width: 580px;
+    padding: 16px 40px;
+  }
+  .pay-main {
+    max-width: 580px;
+    padding: 32px 40px 48px;
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    margin-top: 32px;
+    margin-bottom: 32px;
+  }
+  .pay-skeleton-inner {
+    max-width: 580px;
+  }
+}
+
+/* Payment sheet - centered on desktop */
+.pay-sheet {
+  max-width: 100%;
+}
+
+@media (min-width: 640px) {
+  .pay-sheet {
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .pay-sheet {
+    max-width: 520px;
+  }
+}
+
 /* Safe area for mobile notch/home indicator */
 .safe-bottom {
   padding-bottom: max(env(safe-area-inset-bottom, 20px), 20px);

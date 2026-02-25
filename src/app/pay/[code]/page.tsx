@@ -24,7 +24,7 @@ function LoadingSkeleton() {
       background: '#FAFAFA',
       padding: '16px',
     }}>
-      <div style={{ maxWidth: '420px', margin: '0 auto', paddingTop: '48px' }}>
+      <div className="pay-skeleton-inner">
         <div style={{
           width: '180px',
           height: '24px',
@@ -465,7 +465,7 @@ export default function PaymentPage() {
           paddingTop: 'env(safe-area-inset-top, 0px)',
         }}
       >
-        <div style={{ maxWidth: '420px', margin: '0 auto', padding: '12px 20px' }}>
+        <div className="pay-header-inner">
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Image src="/logo.png" alt="ZapSplit" width={28} height={28} />
@@ -476,7 +476,7 @@ export default function PaymentPage() {
         </div>
       </motion.header>
 
-      <main style={{ maxWidth: '420px', margin: '0 auto', padding: '0 20px 40px' }}>
+      <main className="pay-main">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -632,7 +632,7 @@ function PaymentSuccessScreen({ recipientName, amount }: { recipientName: string
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        style={{ textAlign: 'center', maxWidth: '340px' }}
+        style={{ textAlign: 'center', maxWidth: '400px', width: '100%', padding: '0 20px' }}
       >
         <motion.div
           initial={{ scale: 0 }}
