@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Zap, Smartphone, Receipt, Users, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Smartphone, Receipt, Users, ArrowRight, CheckCircle2, Zap } from 'lucide-react';
+import Image from 'next/image';
 
 const features = [
   {
@@ -35,9 +36,7 @@ export default function Home() {
       <header className="fixed top-0 left-0 right-0 z-50 glass">
         <div style={{ maxWidth: '56rem', marginLeft: 'auto', marginRight: 'auto', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.75rem', backgroundColor: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Zap size={22} color="white" />
-            </div>
+            <Image src="/logo.png" alt="ZapSplit" width={32} height={32} />
             <span style={{ fontWeight: 'bold', fontSize: '1.25rem', color: 'var(--text-primary)' }}>ZapSplit</span>
           </div>
           <a
@@ -195,9 +194,7 @@ export default function Home() {
                 {/* Mock App Content */}
                 <div style={{ padding: '1rem', borderBottom: '1px solid var(--border-light)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                    <div style={{ width: '1.5rem', height: '1.5rem', borderRadius: '0.5rem', backgroundColor: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Zap size={14} color="white" />
-                    </div>
+                    <Image src="/logo.png" alt="ZapSplit" width={20} height={20} />
                     <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>ZapSplit</span>
                   </div>
                 </div>
@@ -380,9 +377,7 @@ export default function Home() {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
             {/* Logo */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div style={{ width: '2rem', height: '2rem', borderRadius: '0.5rem', backgroundColor: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Zap size={16} color="white" />
-              </div>
+              <Image src="/logo.png" alt="ZapSplit" width={28} height={28} />
               <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>ZapSplit</span>
             </div>
 
