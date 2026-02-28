@@ -265,3 +265,13 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }
+
+/* Landing page responsive grids */
+@media (max-width: 768px) {
+  .features-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .steps-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
