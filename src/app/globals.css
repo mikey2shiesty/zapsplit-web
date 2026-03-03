@@ -285,6 +285,8 @@ body {
   }
   .hero-trust {
     justify-content: center !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
   }
   .features-grid {
     grid-template-columns: 1fr !important;
