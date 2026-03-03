@@ -272,11 +272,13 @@ body {
     grid-template-columns: 1fr !important;
     text-align: center;
     padding-top: 7rem !important;
-    padding-bottom: 2rem !important;
-    gap: 3rem !important;
+    padding-bottom: 3rem !important;
+    gap: 2.5rem !important;
   }
   .hero-phone {
-    order: -1;
+    order: 1;
+    transform: scale(0.8);
+    margin-top: -2rem;
   }
   .features-grid {
     grid-template-columns: 1fr !important;
