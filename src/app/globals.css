@@ -280,7 +280,19 @@ body {
     transform: scale(0.8);
     margin-top: -2rem;
   }
+  .hero-buttons {
+    justify-content: center !important;
+  }
+  .hero-trust {
+    justify-content: center !important;
+  }
   .features-grid {
     grid-template-columns: 1fr !important;
+  }
+  .footer-inner {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center;
+    gap: 1rem !important;
   }
 }

@@ -172,7 +172,7 @@ export default function Home() {
               their fair share. Direct to your bank account.
             </p>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            <div className="hero-buttons" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
               <motion.a
                 whileHover={{ scale: 1.03, boxShadow: '0 0 30px rgba(99,102,241,0.2)' }}
                 whileTap={{ scale: 0.97 }}
@@ -221,7 +221,7 @@ export default function Home() {
             </div>
 
             {/* Trust row */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginTop: '3rem', flexWrap: 'wrap' }}>
+            <div className="hero-trust" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginTop: '3rem', flexWrap: 'wrap' }}>
               {[
                 { icon: Shield, label: 'Bank-grade security' },
                 { icon: CreditCard, label: 'Powered by Stripe' },
@@ -597,7 +597,7 @@ export default function Home() {
       {/* ── Footer ── */}
       <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '3rem 0 2.5rem' }}>
         <div style={{ maxWidth: '76rem', margin: '0 auto', padding: '0 2rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
+          <div className="footer-inner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Image src="/logo.png" alt="ZapSplit" width={20} height={20} />
               <span style={{ fontWeight: 700, fontSize: '0.875rem' }}>ZapSplit</span>
