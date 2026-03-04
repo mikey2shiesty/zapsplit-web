@@ -47,6 +47,9 @@
 }
 
 .dark {
+  --primary: #818CF8;
+  --primary-dark: #6366F1;
+  --primary-light: #A5B4FC;
   --background: #000000;
   --surface: #1C1C1E;
   --surface-elevated: #2C2C2E;
