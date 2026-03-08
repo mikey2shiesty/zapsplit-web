@@ -2,12 +2,12 @@
 
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
 
 // Load Stripe outside of component to avoid recreating on every render
 let stripePromise: Promise<Stripe | null>;
 
-const getStripe = () => {
+export const getStripe = () => {
   if (!stripePromise) {
     stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
   }
@@ -16,27 +16,15 @@ const getStripe = () => {
 
 interface StripeProviderProps {
   children: ReactNode;
+  clientSecret: string;
 }
 
-export default function StripeProvider({ children }: StripeProviderProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
-
+export default function StripeProvider({ children, clientSecret }: StripeProviderProps) {
   return (
     <Elements
       stripe={getStripe()}
       options={{
-        mode: 'payment',
-        amount: 1000,
-        currency: 'aud',
-        paymentMethodTypes: ['card', 'link'],
+        clientSecret,
         appearance: {
           theme: 'night',
           variables: {

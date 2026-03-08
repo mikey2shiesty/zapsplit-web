@@ -14,7 +14,6 @@ import { getSplitByCode, SplitWithDetails, SplitItem, saveItemClaims, createPaym
 import ItemList from '@/components/ItemList';
 import PaymentSummary from '@/components/PaymentSummary';
 import PayButton from '@/components/PayButton';
-import StripeProvider from '@/components/StripeProvider';
 
 // Loading skeleton — flat white with grey shimmers
 function LoadingSkeleton() {
@@ -599,19 +598,17 @@ export default function PaymentPage() {
 
         {/* Pay Button */}
         <div style={{ marginTop: '28px', paddingBottom: 'max(env(safe-area-inset-bottom, 20px), 20px)' }}>
-          <StripeProvider>
-            <PayButton
-              amount={total}
-              recipientName={split.creator?.full_name || 'Unknown'}
-              creatorStripeAccountId={split.creator?.stripe_connect_account_id}
-              splitId={split.id}
-              payerName={userName}
-              payerEmail={userEmail}
-              disabled={!isUserInfoComplete || selectedItems.size === 0}
-              onSuccess={handlePaymentSuccess}
-              onError={handlePaymentError}
-            />
-          </StripeProvider>
+          <PayButton
+            amount={total}
+            recipientName={split.creator?.full_name || 'Unknown'}
+            creatorStripeAccountId={split.creator?.stripe_connect_account_id}
+            splitId={split.id}
+            payerName={userName}
+            payerEmail={userEmail}
+            disabled={!isUserInfoComplete || selectedItems.size === 0}
+            onSuccess={handlePaymentSuccess}
+            onError={handlePaymentError}
+          />
         </div>
       </main>
     </div>

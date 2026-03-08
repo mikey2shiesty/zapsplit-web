@@ -5,11 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, X, Lock } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import {
+  Elements,
+  CardElement,
+  PaymentRequestButtonElement,
   useStripe,
   useElements,
-  PaymentElement,
-  ExpressCheckoutElement,
 } from '@stripe/react-stripe-js';
+import { getStripe } from '@/components/StripeProvider';
+import type { PaymentRequest } from '@stripe/stripe-js';
 
 interface PayButtonProps {
   amount: number;
@@ -23,9 +26,229 @@ interface PayButtonProps {
   onError: (error: string) => void;
 }
 
+// Inner component with Apple Pay + Card form
+function CardForm({
+  totalAmount,
+  clientSecret,
+  payerName,
+  payerEmail,
+  loading,
+  setLoading,
+  onSuccess,
+  onError,
+  onClose,
+}: {
+  totalAmount: number;
+  clientSecret: string;
+  payerName: string;
+  payerEmail: string;
+  loading: boolean;
+  setLoading: (v: boolean) => void;
+  onSuccess: () => void;
+  onError: (error: string) => void;
+  onClose: () => void;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [cardReady, setCardReady] = useState(false);
+  const [paymentRequest, setPaymentRequest] = useState<PaymentRequest | null>(null);
+  const [canApplePay, setCanApplePay] = useState(false);
+
+  // Set up Apple Pay / Google Pay
+  useEffect(() => {
+    if (!stripe) return;
+
+    const pr = stripe.paymentRequest({
+      country: 'AU',
+      currency: 'aud',
+      total: {
+        label: 'ZapSplit Payment',
+        amount: Math.round(totalAmount * 100),
+      },
+      requestPayerName: true,
+      requestPayerEmail: true,
+    });
+
+    pr.canMakePayment().then((result) => {
+      if (result) {
+        setCanApplePay(true);
+        setPaymentRequest(pr);
+      }
+    });
+
+    // Handle payment from Apple Pay / Google Pay
+    pr.on('paymentmethod', async (ev) => {
+      setLoading(true);
+      const { error, paymentIntent } = await stripe.confirmCardPayment(
+        clientSecret,
+        { payment_method: ev.paymentMethod.id },
+        { handleActions: false }
+      );
+
+      if (error) {
+        ev.complete('fail');
+        onError(error.message || 'Payment failed');
+        setLoading(false);
+      } else if (paymentIntent?.status === 'requires_action') {
+        ev.complete('success');
+        const { error: actionError } = await stripe.confirmCardPayment(clientSecret);
+        if (actionError) {
+          onError(actionError.message || 'Payment failed');
+        } else {
+          onClose();
+          onSuccess();
+        }
+        setLoading(false);
+      } else {
+        ev.complete('success');
+        onClose();
+        onSuccess();
+        setLoading(false);
+      }
+    });
+  }, [stripe, totalAmount, clientSecret]);
+
+  // Handle card payment
+  const handleSubmit = async () => {
+    if (!stripe || !elements) return;
+
+    const cardElement = elements.getElement(CardElement);
+    if (!cardElement) {
+      onError('Card form not ready');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardElement,
+          billing_details: {
+            name: payerName,
+            email: payerEmail,
+          },
+        },
+      });
+
+      if (error) {
+        onError(error.message || 'Payment failed');
+      } else if (paymentIntent?.status === 'succeeded') {
+        onClose();
+        onSuccess();
+      }
+    } catch (err: any) {
+      onError(err.message || 'Payment failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      {/* Apple Pay / Google Pay Button */}
+      {canApplePay && paymentRequest && (
+        <>
+          <div style={{ marginBottom: '8px' }}>
+            <PaymentRequestButtonElement
+              options={{
+                paymentRequest,
+                style: {
+                  paymentRequestButton: {
+                    type: 'default',
+                    theme: 'light',
+                    height: '48px',
+                  },
+                },
+              }}
+            />
+          </div>
+
+          {/* Divider */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 0' }}>
+            <div style={{ flex: 1, height: '1px', background: '#3a3a4e' }} />
+            <span style={{ fontSize: '13px', color: '#7a7a8e', fontWeight: 500 }}>Or pay with card</span>
+            <div style={{ flex: 1, height: '1px', background: '#3a3a4e' }} />
+          </div>
+        </>
+      )}
+
+      {/* Card Input */}
+      <div style={{ marginBottom: '24px' }}>
+        {!canApplePay && (
+          <label style={{
+            display: 'block',
+            fontSize: '14px',
+            fontWeight: 500,
+            color: '#CBD5E1',
+            marginBottom: '10px',
+          }}>
+            Card details
+          </label>
+        )}
+        <div style={{
+          padding: '14px',
+          borderRadius: '8px',
+          border: '1px solid #3a3a4e',
+          background: '#252540',
+        }}>
+          <CardElement
+            onReady={() => setCardReady(true)}
+            options={{
+              style: {
+                base: {
+                  fontSize: '16px',
+                  color: '#E2E8F0',
+                  fontFamily: 'system-ui, -apple-system, sans-serif',
+                  '::placeholder': { color: '#64748B' },
+                },
+                invalid: { color: '#EF4444' },
+              },
+              hidePostalCode: true,
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Pay Button */}
+      <button
+        onClick={handleSubmit}
+        disabled={loading || !stripe || !cardReady}
+        style={{
+          width: '100%',
+          padding: '16px',
+          borderRadius: '10px',
+          border: 'none',
+          background: loading || !cardReady ? '#374151' : '#0F172A',
+          color: 'white',
+          fontSize: '16px',
+          fontWeight: 600,
+          cursor: loading ? 'not-allowed' : 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
+          opacity: loading || !cardReady ? 0.7 : 1,
+        }}
+      >
+        {loading ? (
+          <Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} />
+        ) : (
+          <>
+            <span>Pay {formatCurrency(totalAmount)}</span>
+            <Lock size={15} style={{ opacity: 0.5 }} />
+          </>
+        )}
+      </button>
+
+      <p style={{ textAlign: 'center', fontSize: '12px', color: '#64748B', marginTop: '12px' }}>
+        Secured by Stripe
+      </p>
+    </>
+  );
+}
+
 export default function PayButton({
   amount,
-  recipientName,
   creatorStripeAccountId,
   splitId,
   payerName,
@@ -34,59 +257,21 @@ export default function PayButton({
   onSuccess,
   onError,
 }: PayButtonProps) {
-  const stripe = useStripe();
-  const elements = useElements();
   const [loading, setLoading] = useState(false);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [showSheet, setShowSheet] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
 
-  const isReady = amount > 0 && !disabled && payerName && payerEmail;
   const platformFee = 0.50;
   const totalAmount = amount + platformFee;
+  const isReady = amount > 0 && !disabled && payerName && payerEmail;
 
-  // Update Elements amount when total changes
-  useEffect(() => {
-    if (elements && totalAmount > 0) {
-      elements.update({ amount: Math.round(totalAmount * 100) });
+  const handlePayClick = async () => {
+    if (!creatorStripeAccountId) {
+      onError('Recipient has not set up payments yet');
+      return;
     }
-  }, [elements, totalAmount]);
 
-  // Create payment intent when ready
-  useEffect(() => {
-    if (!isReady || !creatorStripeAccountId) return;
-
-    const createPaymentIntent = async () => {
-      try {
-        const response = await fetch('/api/payment/create-intent', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount: totalAmount,
-            creatorStripeAccountId,
-            splitId,
-            payerEmail,
-            payerName,
-          }),
-        });
-
-        const data = await response.json();
-        if (data.error) {
-          console.error('Payment intent error:', data.error);
-          return;
-        }
-
-        setClientSecret(data.clientSecret);
-      } catch (err) {
-        console.error('Failed to create payment intent:', err);
-      }
-    };
-
-    createPaymentIntent();
-  }, [amount, creatorStripeAccountId, splitId, payerEmail, payerName, isReady, totalAmount]);
-
-  // Helper to create payment intent on-demand
-  const createIntentOnDemand = async (): Promise<string | null> => {
-    if (clientSecret) return clientSecret;
+    setLoading(true);
     try {
       const response = await fetch('/api/payment/create-intent', {
         method: 'POST',
@@ -99,91 +284,18 @@ export default function PayButton({
           payerName,
         }),
       });
+
       const data = await response.json();
       if (data.error) {
         onError(data.error);
-        return null;
+        setLoading(false);
+        return;
       }
+
       setClientSecret(data.clientSecret);
-      return data.clientSecret;
+      setShowSheet(true);
     } catch (err: any) {
       onError(err.message || 'Failed to create payment');
-      return null;
-    }
-  };
-
-  // Handle Express Checkout (Apple Pay, Google Pay, Link)
-  const handleExpressCheckout = async () => {
-    if (!stripe || !elements) return;
-    setLoading(true);
-
-    try {
-      const { error: submitError } = await elements.submit();
-      if (submitError) {
-        onError(submitError.message || 'Validation failed');
-        setLoading(false);
-        return;
-      }
-
-      const secret = await createIntentOnDemand();
-      if (!secret) {
-        setLoading(false);
-        return;
-      }
-
-      const { error, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        clientSecret: secret,
-        confirmParams: {
-          return_url: window.location.href,
-        },
-        redirect: 'if_required',
-      });
-
-      if (error) {
-        onError(error.message || 'Payment failed');
-      } else if (paymentIntent?.status === 'succeeded') {
-        setShowSheet(false);
-        onSuccess();
-      }
-    } catch (err: any) {
-      onError(err.message || 'Payment failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Handle card payment
-  const handleSubmit = async () => {
-    if (!stripe || !elements || !clientSecret) return;
-
-    setLoading(true);
-
-    try {
-      const { error: submitError } = await elements.submit();
-      if (submitError) {
-        onError(submitError.message || 'Validation failed');
-        setLoading(false);
-        return;
-      }
-
-      const { error, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        clientSecret,
-        confirmParams: {
-          return_url: window.location.href,
-        },
-        redirect: 'if_required',
-      });
-
-      if (error) {
-        onError(error.message || 'Payment failed');
-      } else if (paymentIntent?.status === 'succeeded') {
-        setShowSheet(false);
-        onSuccess();
-      }
-    } catch (err: any) {
-      onError(err.message || 'Payment failed');
     } finally {
       setLoading(false);
     }
@@ -194,17 +306,10 @@ export default function PayButton({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        style={{
-          padding: '16px',
-          borderRadius: '10px',
-          background: '#F3F4F6',
-          textAlign: 'center',
-        }}
+        style={{ padding: '16px', borderRadius: '10px', background: '#F3F4F6', textAlign: 'center' }}
       >
         <p style={{ color: '#9CA3AF', fontSize: '14px', fontWeight: 500 }}>
-          {!payerName || !payerEmail
-            ? 'Enter your details above to pay'
-            : 'Select items to pay'}
+          {!payerName || !payerEmail ? 'Enter your details above to pay' : 'Select items to pay'}
         </p>
       </motion.div>
     );
@@ -212,7 +317,7 @@ export default function PayButton({
 
   return (
     <>
-      {/* Trigger Button + fee info */}
+      {/* Trigger Button */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -221,7 +326,8 @@ export default function PayButton({
       >
         <motion.button
           whileTap={{ scale: 0.98 }}
-          onClick={() => setShowSheet(true)}
+          onClick={handlePayClick}
+          disabled={loading}
           style={{
             width: '100%',
             padding: '16px',
@@ -231,52 +337,50 @@ export default function PayButton({
             color: 'white',
             fontSize: '16px',
             fontWeight: 600,
-            cursor: 'pointer',
+            cursor: loading ? 'wait' : 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            gap: '8px',
+            opacity: loading ? 0.8 : 1,
           }}
         >
-          Pay {formatCurrency(totalAmount)}
+          {loading ? (
+            <>
+              <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
+              <span>Preparing...</span>
+            </>
+          ) : (
+            <span>Pay {formatCurrency(totalAmount)}</span>
+          )}
         </motion.button>
 
-        {/* Fee + Stripe line */}
         <div style={{ textAlign: 'center' }}>
           <span style={{ fontSize: '13px', color: '#9CA3AF' }}>
             {formatCurrency(amount)} + {formatCurrency(platformFee)} fee
           </span>
           <span style={{ fontSize: '13px', color: '#D1D5DB', margin: '0 8px' }}>&middot;</span>
-          <span style={{ fontSize: '12px', color: '#9CA3AF' }}>
-            Secured by Stripe
-          </span>
+          <span style={{ fontSize: '12px', color: '#9CA3AF' }}>Secured by Stripe</span>
         </div>
       </motion.div>
 
-      {/* Payment Sheet Modal */}
+      {/* Payment Sheet */}
       <AnimatePresence>
-        {showSheet && (
+        {showSheet && clientSecret && (
           <>
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => !loading && setShowSheet(false)}
-              style={{
-                position: 'fixed',
-                inset: 0,
-                background: 'rgba(0, 0, 0, 0.5)',
-                zIndex: 9998,
-              }}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9998 }}
             />
 
-            {/* Bottom Sheet */}
             <motion.div
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="pay-sheet"
               style={{
                 position: 'fixed',
                 bottom: 0,
@@ -292,12 +396,10 @@ export default function PayButton({
                 paddingBottom: '40px',
               }}
             >
-              {/* Sheet Header */}
-              <div style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                marginBottom: '16px',
-              }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <span style={{ fontSize: '17px', fontWeight: 600, color: '#E2E8F0' }}>
+                  Pay {formatCurrency(totalAmount)}
+                </span>
                 <button
                   onClick={() => !loading && setShowSheet(false)}
                   style={{
@@ -316,73 +418,25 @@ export default function PayButton({
                 </button>
               </div>
 
-              {/* Express Checkout: Apple Pay, Google Pay, Link */}
-              <div style={{ marginBottom: '8px' }}>
-                <ExpressCheckoutElement
-                  onConfirm={handleExpressCheckout}
-                  options={{
-                    wallets: {
-                      applePay: 'auto',
-                      googlePay: 'auto',
-                    },
-                  }}
-                />
-              </div>
-
-              {/* Divider */}
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                padding: '16px 0',
-              }}>
-                <div style={{ flex: 1, height: '1px', background: '#3a3a4e' }} />
-                <span style={{ fontSize: '13px', color: '#7a7a8e', fontWeight: 500 }}>Or pay using</span>
-                <div style={{ flex: 1, height: '1px', background: '#3a3a4e' }} />
-              </div>
-
-              {/* Card Payment Form */}
-              <div style={{ marginBottom: '20px' }}>
-                <PaymentElement
-                  options={{
-                    wallets: {
-                      applePay: 'never',
-                      googlePay: 'never',
-                    },
-                  }}
-                />
-              </div>
-
-              {/* Pay Button */}
-              <button
-                onClick={handleSubmit}
-                disabled={loading || !stripe || !clientSecret}
-                style={{
-                  width: '100%',
-                  padding: '16px',
-                  borderRadius: '10px',
-                  border: 'none',
-                  background: '#0F172A',
-                  color: 'white',
-                  fontSize: '16px',
-                  fontWeight: 600,
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  opacity: loading ? 0.7 : 1,
+              <Elements
+                stripe={getStripe()}
+                options={{
+                  clientSecret,
+                  appearance: { theme: 'night' },
                 }}
               >
-                {loading ? (
-                  <Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} />
-                ) : (
-                  <>
-                    <span>Pay {formatCurrency(totalAmount)}</span>
-                    <Lock size={15} style={{ opacity: 0.5 }} />
-                  </>
-                )}
-              </button>
+                <CardForm
+                  totalAmount={totalAmount}
+                  clientSecret={clientSecret}
+                  payerName={payerName}
+                  payerEmail={payerEmail}
+                  loading={loading}
+                  setLoading={setLoading}
+                  onSuccess={onSuccess}
+                  onError={(err) => { setShowSheet(false); onError(err); }}
+                  onClose={() => setShowSheet(false)}
+                />
+              </Elements>
             </motion.div>
           </>
         )}
