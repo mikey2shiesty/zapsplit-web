@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// ZapSplit platform fee (50 cents per transaction)
-const PLATFORM_FEE = 50; // in cents
-
 export async function POST(request: NextRequest) {
   try {
     const secretKey = process.env.STRIPE_SECRET_KEY;
@@ -15,7 +12,8 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const {
-      amount, // Amount in dollars
+      amount, // Total amount in dollars (items + fee)
+      fee, // Service fee in dollars (calculated by frontend)
       creatorStripeAccountId, // The bill creator's connected Stripe account
       splitId,
       payerEmail,
@@ -23,23 +21,23 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!amount || !creatorStripeAccountId) {
+    if (!amount || !creatorStripeAccountId || !fee) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    // Convert to cents (amount already includes platform fee from frontend)
-    const amountInCents = Math.round(amount * 100);
-    const totalCents = amountInCents;
+    // Convert to cents (amount already includes fee from frontend)
+    const totalCents = Math.round(amount * 100);
+    const feeCents = Math.round(fee * 100);
 
     // Create payment intent via Stripe REST API
     const params = new URLSearchParams();
     params.append('amount', totalCents.toString());
     params.append('currency', 'aud');
     params.append('payment_method_types[]', 'card');
-    params.append('application_fee_amount', PLATFORM_FEE.toString());
+    params.append('application_fee_amount', feeCents.toString());
     params.append('transfer_data[destination]', creatorStripeAccountId);
     params.append('metadata[split_id]', splitId || '');
     params.append('metadata[splitId]', splitId || '');
@@ -47,7 +45,7 @@ export async function POST(request: NextRequest) {
     params.append('metadata[payer_name]', payerName || '');
     // For instant payouts via webhook
     params.append('metadata[connectedAccountId]', creatorStripeAccountId);
-    params.append('metadata[instantPayoutAmount]', (totalCents - PLATFORM_FEE).toString());
+    params.append('metadata[instantPayoutAmount]', (totalCents - feeCents).toString());
 
     const response = await fetch('https://api.stripe.com/v1/payment_intents', {
       method: 'POST',
@@ -72,7 +70,7 @@ export async function POST(request: NextRequest) {
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
       amount: amountInCents,
-      platformFee: PLATFORM_FEE,
+      platformFee: feeCents,
       total: totalCents,
     });
   } catch (error: any) {

@@ -16,6 +16,7 @@ import type { PaymentRequest } from '@stripe/stripe-js';
 
 interface PayButtonProps {
   amount: number;
+  fee: number;
   recipientName: string;
   creatorStripeAccountId?: string;
   splitId?: string;
@@ -249,6 +250,7 @@ function CardForm({
 
 export default function PayButton({
   amount,
+  fee,
   creatorStripeAccountId,
   splitId,
   payerName,
@@ -261,8 +263,7 @@ export default function PayButton({
   const [showSheet, setShowSheet] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
 
-  const platformFee = 0.50;
-  const totalAmount = amount + platformFee;
+  const totalAmount = amount + fee;
   const isReady = amount > 0 && !disabled && payerName && payerEmail;
 
   const handlePayClick = async () => {
@@ -278,6 +279,7 @@ export default function PayButton({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: totalAmount,
+          fee,
           creatorStripeAccountId,
           splitId,
           payerEmail,
@@ -357,7 +359,7 @@ export default function PayButton({
 
         <div style={{ textAlign: 'center' }}>
           <span style={{ fontSize: '13px', color: '#9CA3AF' }}>
-            {formatCurrency(amount)} + {formatCurrency(platformFee)} fee
+            {formatCurrency(amount)} + {formatCurrency(fee)} fee
           </span>
           <span style={{ fontSize: '13px', color: '#D1D5DB', margin: '0 8px' }}>&middot;</span>
           <span style={{ fontSize: '12px', color: '#9CA3AF' }}>Secured by Stripe</span>

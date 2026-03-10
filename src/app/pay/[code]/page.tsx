@@ -277,8 +277,12 @@ export default function PaymentPage() {
     fetchSplit();
   }, [code]);
 
-  // Platform fee constant
-  const SERVICE_FEE_FIXED = 0.50; // $0.50
+  // Dynamic fee: covers Stripe fees (1.75% + $0.30) + $0.50 profit
+  // Formula: fee = (0.80 + 0.0175 * amount) / 0.9825
+  const calculateFee = (amount: number) => {
+    if (amount <= 0) return 0;
+    return Math.round(((0.80 + 0.0175 * amount) / 0.9825) * 100) / 100;
+  };
 
   // Calculate totals
   const { itemsTotal, serviceFee, total } = useMemo(() => {
@@ -297,8 +301,7 @@ export default function PaymentPage() {
       return sum + ((unitPrice * qty) / shareCount);
     }, 0);
 
-    // Platform fee: flat $0.50 (only if items selected)
-    const calcServiceFee = selectedItemsTotal > 0 ? SERVICE_FEE_FIXED : 0;
+    const calcServiceFee = calculateFee(selectedItemsTotal);
 
     const calcTotal = selectedItemsTotal + calcServiceFee;
 
@@ -596,7 +599,8 @@ export default function PaymentPage() {
         {/* Pay Button */}
         <div style={{ marginTop: '28px', paddingBottom: 'max(env(safe-area-inset-bottom, 20px), 20px)' }}>
           <PayButton
-            amount={total}
+            amount={itemsTotal}
+            fee={serviceFee}
             recipientName={split.creator?.full_name || 'Unknown'}
             creatorStripeAccountId={split.creator?.stripe_connect_account_id}
             splitId={split.id}
