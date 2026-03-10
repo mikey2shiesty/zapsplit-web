@@ -277,8 +277,7 @@ export default function PaymentPage() {
     fetchSplit();
   }, [code]);
 
-  // Service fee constants
-  const SERVICE_FEE_PERCENT = 0.035; // 3.5%
+  // Platform fee constant
   const SERVICE_FEE_FIXED = 0.50; // $0.50
 
   // Calculate totals
@@ -298,10 +297,8 @@ export default function PaymentPage() {
       return sum + ((unitPrice * qty) / shareCount);
     }, 0);
 
-    // Service fee: 3.5% + $0.50 (only if items selected)
-    const calcServiceFee = selectedItemsTotal > 0
-      ? (selectedItemsTotal * SERVICE_FEE_PERCENT) + SERVICE_FEE_FIXED
-      : 0;
+    // Platform fee: flat $0.50 (only if items selected)
+    const calcServiceFee = selectedItemsTotal > 0 ? SERVICE_FEE_FIXED : 0;
 
     const calcTotal = selectedItemsTotal + calcServiceFee;
 
