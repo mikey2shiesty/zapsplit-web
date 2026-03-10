@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
-      amount: amountInCents,
+      amount: totalCents - feeCents,
       platformFee: feeCents,
       total: totalCents,
     });
