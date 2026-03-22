@@ -1,42 +1,113 @@
 "use client";
 
 import { useEffect } from "react";
+import { RefreshCw } from "lucide-react";
 
 export default function StripeRefreshPage() {
   useEffect(() => {
-    // Try to redirect back to the app to retry onboarding
-    window.location.href = "zapsplit://stripe-refresh";
+    const timer = setTimeout(() => {
+      window.location.href = "zapsplit://stripe-refresh";
+    }, 1500);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white px-6 text-center dark:bg-black">
-      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30">
-        <svg
-          className="h-10 w-10 text-orange-600 dark:text-orange-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2.5}
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182"
-          />
-        </svg>
-      </div>
-      <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
-        Session Expired
-      </h1>
-      <p className="mb-8 text-gray-500 dark:text-gray-400">
-        Your setup session has expired. Return to the app to try again.
-      </p>
-      <a
-        href="zapsplit://stripe-refresh"
-        className="rounded-xl bg-blue-500 px-8 py-3.5 text-lg font-semibold text-white transition-colors hover:bg-blue-600"
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#0A0A0B",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "24px",
+        fontFamily:
+          '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+      }}
+    >
+      {/* Card */}
+      <div
+        style={{
+          background: "rgba(255,255,255,0.04)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: "20px",
+          padding: "48px 36px",
+          maxWidth: "400px",
+          width: "100%",
+          textAlign: "center",
+        }}
       >
-        Return to App
-      </a>
+        {/* Refresh icon */}
+        <div
+          style={{
+            width: "72px",
+            height: "72px",
+            borderRadius: "50%",
+            background: "rgba(245, 158, 11, 0.12)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "0 auto 24px",
+          }}
+        >
+          <RefreshCw size={32} color="#F59E0B" strokeWidth={2} />
+        </div>
+
+        <h1
+          style={{
+            fontSize: "24px",
+            fontWeight: 700,
+            color: "#FAFAFA",
+            marginBottom: "8px",
+            letterSpacing: "-0.02em",
+          }}
+        >
+          Session expired
+        </h1>
+
+        <p
+          style={{
+            fontSize: "15px",
+            color: "#A1A1AA",
+            lineHeight: 1.6,
+            marginBottom: "32px",
+          }}
+        >
+          Your setup session has timed out. Return to the app to continue setting up your account.
+        </p>
+
+        <a
+          href="zapsplit://stripe-refresh"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            padding: "14px 24px",
+            borderRadius: "12px",
+            background: "#FAFAFA",
+            color: "#0A0A0B",
+            fontSize: "16px",
+            fontWeight: 600,
+            textDecoration: "none",
+            letterSpacing: "-0.01em",
+            transition: "opacity 0.15s ease",
+          }}
+        >
+          Return to ZapSplit
+        </a>
+      </div>
+
+      {/* Footer */}
+      <p
+        style={{
+          marginTop: "24px",
+          fontSize: "13px",
+          color: "#52525B",
+        }}
+      >
+        Secured by Stripe
+      </p>
     </div>
   );
 }

@@ -1,38 +1,113 @@
 "use client";
 
 import { useEffect } from "react";
+import { CheckCircle2 } from "lucide-react";
 
 export default function StripeReturnPage() {
   useEffect(() => {
-    // Try to redirect back to the app via deep link
-    window.location.href = "zapsplit://stripe-return";
+    const timer = setTimeout(() => {
+      window.location.href = "zapsplit://stripe-return";
+    }, 1500);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white px-6 text-center dark:bg-black">
-      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-        <svg
-          className="h-10 w-10 text-green-600 dark:text-green-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2.5}
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-        </svg>
-      </div>
-      <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
-        Setup Complete
-      </h1>
-      <p className="mb-8 text-gray-500 dark:text-gray-400">
-        Your bank account has been connected. You can close this page and return to ZapSplit.
-      </p>
-      <a
-        href="zapsplit://stripe-return"
-        className="rounded-xl bg-blue-500 px-8 py-3.5 text-lg font-semibold text-white transition-colors hover:bg-blue-600"
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#0A0A0B",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "24px",
+        fontFamily:
+          '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+      }}
+    >
+      {/* Card */}
+      <div
+        style={{
+          background: "rgba(255,255,255,0.04)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: "20px",
+          padding: "48px 36px",
+          maxWidth: "400px",
+          width: "100%",
+          textAlign: "center",
+        }}
       >
-        Return to App
-      </a>
+        {/* Success icon */}
+        <div
+          style={{
+            width: "72px",
+            height: "72px",
+            borderRadius: "50%",
+            background: "rgba(52, 211, 153, 0.12)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "0 auto 24px",
+          }}
+        >
+          <CheckCircle2 size={36} color="#34D399" strokeWidth={2} />
+        </div>
+
+        <h1
+          style={{
+            fontSize: "24px",
+            fontWeight: 700,
+            color: "#FAFAFA",
+            marginBottom: "8px",
+            letterSpacing: "-0.02em",
+          }}
+        >
+          You&apos;re all set
+        </h1>
+
+        <p
+          style={{
+            fontSize: "15px",
+            color: "#A1A1AA",
+            lineHeight: 1.6,
+            marginBottom: "32px",
+          }}
+        >
+          Your bank account has been connected successfully. You can now receive payments through ZapSplit.
+        </p>
+
+        <a
+          href="zapsplit://stripe-return"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            padding: "14px 24px",
+            borderRadius: "12px",
+            background: "#FAFAFA",
+            color: "#0A0A0B",
+            fontSize: "16px",
+            fontWeight: 600,
+            textDecoration: "none",
+            letterSpacing: "-0.01em",
+            transition: "opacity 0.15s ease",
+          }}
+        >
+          Return to ZapSplit
+        </a>
+      </div>
+
+      {/* Footer */}
+      <p
+        style={{
+          marginTop: "24px",
+          fontSize: "13px",
+          color: "#52525B",
+        }}
+      >
+        Secured by Stripe
+      </p>
     </div>
   );
 }
