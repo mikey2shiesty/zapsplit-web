@@ -2,7 +2,7 @@
 
 import { Zap, ArrowLeft, Shield, Mail, MapPin } from 'lucide-react';
 
-const CONTACT_EMAIL = 'zapsplit@gmail.com';
+const CONTACT_EMAIL = 'support@zapsplit.com.au';
 const EFFECTIVE_DATE = '18 February 2026';
 
 export default function PrivacyPolicyPage() {

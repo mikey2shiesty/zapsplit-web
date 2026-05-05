@@ -616,7 +616,7 @@ export default function Home() {
                 </a>
               ))}
               <a
-                href="mailto:zapsplit@gmail.com"
+                href="mailto:support@zapsplit.com.au"
                 style={{ color: '#52525B', textDecoration: 'none', transition: 'color 0.2s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = '#FAFAFA')}
                 onMouseLeave={e => (e.currentTarget.style.color = '#52525B')}

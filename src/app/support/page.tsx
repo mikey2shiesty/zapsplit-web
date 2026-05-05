@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Zap, ArrowLeft, Mail, MapPin, HelpCircle, ChevronDown, MessageCircle } from 'lucide-react';
 
-const CONTACT_EMAIL = 'zapsplit@gmail.com';
+const CONTACT_EMAIL = 'support@zapsplit.com.au';
 
 const faqs = [
   {
