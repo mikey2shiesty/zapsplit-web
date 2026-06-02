@@ -277,11 +277,14 @@ export default function PaymentPage() {
     fetchSplit();
   }, [code]);
 
-  // Dynamic fee: covers Stripe fees (1.75% + $0.30) + $0.50 profit
-  // Formula: fee = (0.80 + 0.0175 * amount) / 0.9825
+  // Dynamic fee: covers Stripe fees (1.75% + $0.30) + ~$0.75 profit
+  // Formula: fee = (1.05 + 0.0175 * amount) / 0.9825
+  // (Raised from $0.80 -> $1.05 fixed so each transaction nets ~$0.75 and
+  // covers Connect per-account/payout costs. Kept in sync with the mobile
+  // create-payment-intent edge function.)
   const calculateFee = (amount: number) => {
     if (amount <= 0) return 0;
-    return Math.round(((0.80 + 0.0175 * amount) / 0.9825) * 100) / 100;
+    return Math.round(((1.05 + 0.0175 * amount) / 0.9825) * 100) / 100;
   };
 
   // Calculate totals
