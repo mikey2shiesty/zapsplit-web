@@ -6,7 +6,8 @@ import { useParams } from 'next/navigation';
 import {
   AlertCircle,
   ChevronDown,
-  CheckCircle2
+  CheckCircle2,
+  Download
 } from 'lucide-react';
 import Image from 'next/image';
 import { formatCurrency, formatDate } from '@/lib/utils';
@@ -673,10 +674,52 @@ function PaymentSuccessScreen({ recipientName, amount }: { recipientName: string
         </p>
 
         <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45 }}
+          style={{
+            marginTop: '32px',
+            padding: '20px',
+            background: '#FFFFFF',
+            border: '1px solid #E5E7EB',
+            borderRadius: '16px',
+            textAlign: 'center',
+          }}
+        >
+          <p style={{ fontSize: '15px', fontWeight: 600, color: '#0F172A', margin: 0 }}>
+            Splitting your own bills?
+          </p>
+          <p style={{ fontSize: '13px', color: '#64748B', margin: '6px 0 16px', lineHeight: 1.5 }}>
+            Scan any receipt, split by item, and get paid back — all in the ZapSplit app.
+          </p>
+          <a
+            href="https://apps.apple.com/au/app/id6759526469"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              width: '100%',
+              padding: '14px 20px',
+              background: '#000000',
+              color: '#FFFFFF',
+              fontSize: '15px',
+              fontWeight: 600,
+              borderRadius: '12px',
+              textDecoration: 'none',
+            }}
+          >
+            <Download size={18} /> Download ZapSplit free
+          </a>
+        </motion.div>
+
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          style={{ marginTop: '32px' }}
+          transition={{ delay: 0.6 }}
+          style={{ marginTop: '20px' }}
         >
           <span style={{ fontSize: '13px', color: '#94A3B8' }}>Powered by ZapSplit</span>
         </motion.div>
