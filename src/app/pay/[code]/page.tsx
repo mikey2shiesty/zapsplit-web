@@ -608,6 +608,12 @@ export default function PaymentPage() {
             recipientName={split.creator?.full_name || 'Unknown'}
             creatorStripeAccountId={split.creator?.stripe_connect_account_id}
             splitId={split.id}
+            code={code}
+            selection={Array.from(selectedItems).map(index => ({
+              itemIndex: index,
+              quantity: selectedQuantities.get(index) || 1,
+              shareCount: sharedItems.get(index) || 1,
+            }))}
             payerName={userName}
             payerEmail={userEmail}
             disabled={!isUserInfoComplete || selectedItems.size === 0}

@@ -15,11 +15,15 @@ import { getStripe } from '@/components/StripeProvider';
 import type { PaymentRequest } from '@stripe/stripe-js';
 
 interface PayButtonProps {
-  amount: number;
-  fee: number;
+  amount: number; // display only — the server recomputes the real charge
+  fee: number;    // display only
   recipientName: string;
   creatorStripeAccountId?: string;
   splitId?: string;
+  // Server-side amount: we send the split code + which items were selected and
+  // the server looks up real prices. We never send a dollar amount to charge.
+  code: string;
+  selection: { itemIndex: number; quantity: number; shareCount: number }[];
   payerName: string;
   payerEmail: string;
   disabled?: boolean;
@@ -252,7 +256,8 @@ export default function PayButton({
   amount,
   fee,
   creatorStripeAccountId,
-  splitId,
+  code,
+  selection,
   payerName,
   payerEmail,
   disabled = false,
@@ -278,10 +283,8 @@ export default function PayButton({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: totalAmount,
-          fee,
-          creatorStripeAccountId,
-          splitId,
+          code,
+          selection,
           payerEmail,
           payerName,
         }),
