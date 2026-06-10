@@ -71,7 +71,7 @@ export default function Home() {
           <motion.a
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
-            href="https://apps.apple.com"
+            href="https://apps.apple.com/au/app/id6759526469"
             style={{
               padding: '0.4375rem 1.125rem',
               borderRadius: '9999px',
@@ -176,7 +176,7 @@ export default function Home() {
               <motion.a
                 whileHover={{ scale: 1.03, boxShadow: '0 0 30px rgba(99,102,241,0.2)' }}
                 whileTap={{ scale: 0.97 }}
-                href="https://apps.apple.com"
+                href="https://apps.apple.com/au/app/id6759526469"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -572,7 +572,7 @@ export default function Home() {
               <motion.a
                 whileHover={{ scale: 1.03, boxShadow: '0 0 40px rgba(99,102,241,0.15)' }}
                 whileTap={{ scale: 0.97 }}
-                href="https://apps.apple.com"
+                href="https://apps.apple.com/au/app/id6759526469"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
