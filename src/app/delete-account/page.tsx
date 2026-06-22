@@ -25,9 +25,8 @@ export default function DeleteAccountPage() {
       <header className="glass" style={{ borderBottom: '1px solid var(--border-light)' }}>
         <div style={{ maxWidth: '56rem', marginLeft: 'auto', marginRight: 'auto', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.75rem', backgroundColor: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Zap size={22} color="white" />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="ZapSplit logo" style={{ width: '2.5rem', height: '2.5rem', objectFit: 'contain' }} />
             <span style={{ fontWeight: 'bold', fontSize: '1.25rem', color: 'var(--text-primary)' }}>ZapSplit</span>
           </div>
           <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.875rem', fontWeight: '500' }}>
@@ -148,9 +147,8 @@ export default function DeleteAccountPage() {
       <footer style={{ borderTop: '1px solid var(--border-light)', padding: '2rem 0' }}>
         <div style={{ maxWidth: '56rem', marginLeft: 'auto', marginRight: 'auto', padding: '0 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ width: '1.5rem', height: '1.5rem', borderRadius: '0.375rem', backgroundColor: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Zap size={12} color="white" />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="ZapSplit logo" style={{ width: '1.5rem', height: '1.5rem', objectFit: 'contain' }} />
             <span>&copy; {new Date().getFullYear()} ZapSplit</span>
           </div>
           <div style={{ display: 'flex', gap: '1.5rem' }}>
