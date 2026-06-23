@@ -10,16 +10,33 @@ export default function GetAppPage() {
 
   useEffect(() => {
     const ua = navigator.userAgent || navigator.vendor || '';
-    if (/iPad|iPhone|iPod/.test(ua)) {
-      setPlatform('ios');
-      window.location.replace(APP_STORE_URL);
-    } else if (/android/i.test(ua)) {
-      setPlatform('android');
-      window.location.replace(PLAY_STORE_URL);
-    } else {
-      setPlatform('other');
-    }
+    if (/iPad|iPhone|iPod/.test(ua)) setPlatform('ios');
+    else if (/android/i.test(ua)) setPlatform('android');
+    else setPlatform('other');
   }, []);
+
+  const primaryStyle = {
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.625rem',
+    padding: '1rem 1.25rem', borderRadius: '0.875rem', textDecoration: 'none',
+    backgroundColor: '#ffffff', color: '#0a1530', fontWeight: 700, fontSize: '1.0625rem',
+  } as const;
+  const secondaryStyle = {
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.625rem',
+    padding: '1rem 1.25rem', borderRadius: '0.875rem', textDecoration: 'none',
+    backgroundColor: 'rgba(255,255,255,0.12)', color: '#ffffff', fontWeight: 700, fontSize: '1.0625rem',
+    border: '1px solid rgba(255,255,255,0.4)',
+  } as const;
+
+  const appStoreBtn = (
+    <a key="ios" href={APP_STORE_URL} style={platform === 'android' ? secondaryStyle : primaryStyle}>
+      Download on the App Store
+    </a>
+  );
+  const playStoreBtn = (
+    <a key="android" href={PLAY_STORE_URL} style={platform === 'android' ? primaryStyle : secondaryStyle}>
+      Get it on Google Play
+    </a>
+  );
 
   return (
     <div
@@ -40,39 +57,18 @@ export default function GetAppPage() {
       <img
         src="/logo.png"
         alt="ZapSplit logo"
-        style={{ width: '5rem', height: '5rem', objectFit: 'contain', marginBottom: '1rem' }}
+        style={{ width: '5.5rem', height: '5.5rem', objectFit: 'contain', marginBottom: '1rem' }}
       />
-      <h1 style={{ color: '#ffffff', fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.02em', margin: 0 }}>
-        ZapSplit
+      <h1 style={{ color: '#ffffff', fontSize: '2.25rem', fontWeight: 800, letterSpacing: '-0.02em', margin: 0 }}>
+        Get ZapSplit
       </h1>
-      <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: '1.0625rem', marginTop: '0.5rem', marginBottom: '2rem', maxWidth: '22rem', lineHeight: 1.5 }}>
-        {platform === 'other'
-          ? 'Split bills & get paid back instantly. Download ZapSplit on your phone:'
-          : 'Opening your app store…'}
+      <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: '1.0625rem', marginTop: '0.625rem', marginBottom: '2.25rem', maxWidth: '24rem', lineHeight: 1.55 }}>
+        Split bills with friends, scan receipts, and get paid back instantly. Free to download.
       </p>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem', width: '100%', maxWidth: '20rem' }}>
-        <a
-          href={APP_STORE_URL}
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.625rem',
-            padding: '0.9375rem 1.25rem', borderRadius: '0.875rem', textDecoration: 'none',
-            backgroundColor: '#ffffff', color: '#0a1530', fontWeight: 700, fontSize: '1rem',
-          }}
-        >
-          Download on the App Store
-        </a>
-        <a
-          href={PLAY_STORE_URL}
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.625rem',
-            padding: '0.9375rem 1.25rem', borderRadius: '0.875rem', textDecoration: 'none',
-            backgroundColor: 'rgba(255,255,255,0.12)', color: '#ffffff', fontWeight: 700, fontSize: '1rem',
-            border: '1px solid rgba(255,255,255,0.4)',
-          }}
-        >
-          Get it on Google Play
-        </a>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem', width: '100%', maxWidth: '21rem' }}>
+        {/* show the user's platform first */}
+        {platform === 'android' ? [playStoreBtn, appStoreBtn] : [appStoreBtn, playStoreBtn]}
       </div>
 
       <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8125rem', marginTop: '2.5rem' }}>
