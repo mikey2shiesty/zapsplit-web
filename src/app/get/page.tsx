@@ -67,8 +67,10 @@ export default function GetAppPage() {
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem', width: '100%', maxWidth: '21rem' }}>
-        {/* show the user's platform first */}
-        {platform === 'android' ? [playStoreBtn, appStoreBtn] : [appStoreBtn, playStoreBtn]}
+        {/* only the relevant store on a phone; both on desktop/unknown */}
+        {platform === 'ios' && appStoreBtn}
+        {platform === 'android' && playStoreBtn}
+        {platform === 'other' && [appStoreBtn, playStoreBtn]}
       </div>
 
       <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8125rem', marginTop: '2.5rem' }}>
