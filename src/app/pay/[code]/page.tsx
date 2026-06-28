@@ -628,6 +628,7 @@ export default function PaymentPage() {
 
 // Payment success — white background, small green check, clean text
 function PaymentSuccessScreen({ recipientName, amount }: { recipientName: string; amount: number }) {
+  const friendName = recipientName && recipientName !== 'Unknown' ? recipientName : 'Your friend';
   return (
     <div style={{
       minHeight: '100vh',
@@ -693,13 +694,13 @@ function PaymentSuccessScreen({ recipientName, amount }: { recipientName: string
           }}
         >
           <p style={{ fontSize: '15px', fontWeight: 600, color: '#0F172A', margin: 0 }}>
-            Splitting your own bills?
+            {friendName} split this bill with ZapSplit
           </p>
           <p style={{ fontSize: '13px', color: '#64748B', margin: '6px 0 16px', lineHeight: 1.5 }}>
             Scan any receipt, split by item, and get paid back — all in the ZapSplit app.
           </p>
           <a
-            href="https://apps.apple.com/au/app/id6759526469"
+            href="https://www.zapsplit.com.au/get"
             target="_blank"
             rel="noopener noreferrer"
             style={{
