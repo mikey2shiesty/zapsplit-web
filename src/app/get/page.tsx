@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 
 const APP_STORE_URL = 'https://apps.apple.com/au/app/id6759526469';
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.zapsplit.app';
@@ -10,9 +11,30 @@ export default function GetAppPage() {
 
   useEffect(() => {
     const ua = navigator.userAgent || navigator.vendor || '';
-    if (/iPad|iPhone|iPod/.test(ua)) setPlatform('ios');
-    else if (/android/i.test(ua)) setPlatform('android');
-    else setPlatform('other');
+    const detected: 'ios' | 'android' | 'other' = /iPad|iPhone|iPod/.test(ua)
+      ? 'ios'
+      : /android/i.test(ua)
+      ? 'android'
+      : 'other';
+    setPlatform(detected);
+
+    // Log this tap so we can measure reel -> store clicks. Fire-and-forget;
+    // never block or affect what the visitor sees. Tag the link per source
+    // with ?s= (e.g. zapsplit.com.au/get?s=tiktok).
+    try {
+      const source = new URLSearchParams(window.location.search).get('s');
+      supabase
+        .from('link_taps')
+        .insert({
+          platform: detected,
+          source: source || null,
+          referrer: document.referrer || null,
+          user_agent: ua || null,
+        })
+        .then(() => {});
+    } catch {
+      // tracking must never break the page
+    }
   }, []);
 
   const primaryStyle = {
