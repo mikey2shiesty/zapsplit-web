@@ -621,6 +621,37 @@ export default function PaymentPage() {
             onError={handlePaymentError}
           />
         </div>
+
+        {/* Subtle growth CTA — shown to everyone who opens the link, whether they pay or not */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          style={{
+            marginTop: '8px',
+            paddingBottom: 'max(env(safe-area-inset-bottom, 24px), 24px)',
+            textAlign: 'center',
+          }}
+        >
+          <a
+            href="https://www.zapsplit.com.au/get"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: '#64748B',
+              textDecoration: 'none',
+            }}
+          >
+            <Download size={14} color="#94A3B8" />
+            Split bills like this yourself — get ZapSplit free
+          </a>
+        </motion.div>
       </main>
     </div>
   );
